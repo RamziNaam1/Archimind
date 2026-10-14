@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* ── Light mode (default) ── */
+:root {
+  --primary:    #7c3bed;
+  --secondary:  #06b6d4;
+  --accent:     #10b981;
+
+  --bg:         #f7f6f8;
+  --bg-card:    rgba(255, 255, 255, 0.8);
+  --text:       #0a0a0f;
+  --text-muted: #64748b;
+  --border:     rgba(0, 0, 0, 0.08);
+}
+
+/* ── Dark mode ── */
+.dark {
+  --bg:         #0a0a0f;
+  --bg-card:    rgba(23, 17, 34, 0.7);
+  --text:       #f1f5f9;
+  --text-muted: #94a3b8;
+  --border:     rgba(255, 255, 255, 0.05);
+}
+
+/* ── Base ── */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}

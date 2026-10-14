@@ -1,0 +1,156 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
+
+enum DiagramType {
+  USE_CASE
+  CLASS
+  SEQUENCE
+  ACTIVITY
+  ER
+}
+
+enum DiagramStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// User
+// ─────────────────────────────────────────────────────────────────────────────
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  role         Role     @default(USER)
+  avatarUrl    String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  conversations Conversation[]
+  diagrams      Diagram[]
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+
+  @@index([email])
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Conversation
+// ─────────────────────────────────────────────────────────────────────────────
+model Conversation {
+  id        String   @id @default(uuid())
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  messages Message[]
+  diagrams Diagram[]
+
+  @@index([userId])
+  @@map("conversations")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Message
+// ─────────────────────────────────────────────────────────────────────────────
+model Message {
+  id        String      @id @default(uuid())
+  role      MessageRole
+  content   String      @db.Text
+  createdAt DateTime    @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+
+  diagram Diagram?
+
+  @@index([conversationId])
+  @@map("messages")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Diagram
+// ─────────────────────────────────────────────────────────────────────────────
+model Diagram {
+  id               String        @id @default(uuid())
+  type             DiagramType
+  name             String   @default("Untitled Diagram")
+  inputDescription String?       @db.Text
+  parsedData       Json?         // JSON structuré : { actors, entities, relations }
+  generatedCode    String?       @db.Text  // Code Mermaid généré
+  renderedUrl      String?
+  status           DiagramStatus @default(PENDING)
+  createdAt        DateTime      @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  conversationId String?
+
+  message   Message? @relation(fields: [messageId], references: [id])
+  messageId String?  @unique // Un message n'a qu'un seul diagramme
+
+  @@index([userId])
+  @@index([conversationId])
+  @@map("diagrams")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RefreshToken
+// ─────────────────────────────────────────────────────────────────────────────
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AuditLog
+// ─────────────────────────────────────────────────────────────────────────────
+model AuditLog {
+  id           String   @id @default(uuid())
+  action       String
+  targetEntity String?
+  targetId     String?
+  metadata     Json?    // Détails supplémentaires de l'action (extensible)
+  createdAt    DateTime @default(now())
+
+  admin   User   @relation(fields: [adminId], references: [id])
+  adminId String
+
+  @@index([adminId])
+  @@index([targetEntity, targetId])
+  @@map("audit_logs")
+}

@@ -1,0 +1,1002 @@
+[
+  {
+    "prompt": "Système de Gestion de Bibliothèque : un Adhérent peut emprunter des Livres. Un Livre est écrit par un ou plusieurs Auteurs.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Adherent {\n        +String nom\n        +emprunter(Livre)\n    }\n    class Livre {\n        +String titre\n        +Boolean estDisponible\n    }\n    class Auteur {\n        +String nom\n    }\n    Adherent \"0..1\" --> \"0..*\" Livre : emprunte\n    Livre \"*\" --> \"1..*\" Auteur : écrit par"
+  },
+  {
+    "prompt": "Gestion de Commandes : Une Commande contient des Lignes de Commande. Chaque ligne concerne un Produit. La Commande est passée par un Client.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    Client \"1\" -- \"*\" Commande : passe\n    Commande \"1\" *-- \"1..*\" LigneCommande : contient\n    LigneCommande \"*\" --> \"1\" Produit : concerne\n    class Commande {\n        +Date date\n        +float total\n        +calculerTotal()\n    }\n    class Produit {\n        +String ref\n        +float prix\n    }"
+  },
+  {
+    "prompt": "Cas d'utilisation pour un Distributeur de Billets (DAB) : Le Client retire de l'argent. Le retrait nécessite une authentification préalable.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor \"Système Bancaire\" as Bank\n    usecase \"Retirer Argent\" as UC1\n    usecase \"S'authentifier\" as UC2\n    Client --> UC1\n    UC1 ..> UC2 : <<include>>\n    UC1 -- Bank"
+  },
+  {
+    "prompt": "Séquence de Connexion : l'Utilisateur saisit ses identifiants sur la Page de Login. La Page demande au Contrôleur de vérifier. le Contrôleur interroge la Base de Données.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor U as Utilisateur\n    participant P as PageLogin\n    participant C as AuthController\n    participant DB as Database\n\n    U->>P: Saisir identifiants\n    P->>C: login(user, pass)\n    C->>DB: findUser(user)\n    DB-->>C: UserFound\n    C-->>P: Token JWT\n    P-->>U: Redirection Dashboard"
+  },
+  {
+    "prompt": "Processus d'approbation : Un employé soumet une demande. Si le montant est > 1000, le Manager doit approuver. Sinon, c'est auto-approuvé. Enfin la comptabilité paie.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> Soumission\n    Soumission --> VerificationMontant\n    state VerificationMontant <<choice>>\n    VerificationMontant --> ApprobationManager : si > 1000\n    VerificationMontant --> AutoApprouve : si <= 1000\n    ApprobationManager --> Paiement\n    AutoApprouve --> Paiement\n    Paiement --> [*]"
+  },
+  {
+    "prompt": "Système de Capteurs : Un Capteur envoie des données à une Passerelle. La Passerelle stocke en local puis synchronise avec le Cloud.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant S as Capteur\n    participant G as Gateway\n    participant C as Cloud\n\n    loop Toutes les 5 minutes\n        S->>G: Envoyer Données\n        G->>G: Stockage Local\n    end\n    G->>C: Synchronisation (Bulk)\n    C-->>G: OK"
+  },
+  {
+    "prompt": "Système e-commerce : Un Client possède un Panier. Le Panier contient des Articles. Chaque Article référence un Produit avec un prix et une quantité.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Client {\n        +String nom\n        +String email\n        +creerCompte()\n        +seConnecter()\n    }\n    class Panier {\n        +Date dateCreation\n        +float montantTotal\n        +calculerTotal()\n        +valider()\n    }\n    class Article {\n        +int quantite\n        +float prixUnitaire\n        +float sousTotal()\n    }\n    class Produit {\n        +String nom\n        +String description\n        +float prix\n        +int stock\n    }\n    Client \"1\" --> \"0..1\" Panier : possède\n    Panier \"1\" *-- \"0..*\" Article : contient\n    Article \"*\" --> \"1\" Produit : référence"
+  },
+  {
+    "prompt": "Gestion hospitalière : Un Patient est suivi par un Médecin. Le Médecin prescrit des Ordonnances. Chaque Ordonnance contient des Médicaments.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Patient {\n        +String nom\n        +Date dateNaissance\n        +String numeroSecu\n    }\n    class Medecin {\n        +String nom\n        +String specialite\n        +consulter(Patient)\n    }\n    class Ordonnance {\n        +Date dateEmission\n        +String instructions\n    }\n    class Medicament {\n        +String nom\n        +String dosage\n        +int dureeJours\n    }\n    Medecin \"1\" --> \"*\" Patient : suit\n    Medecin \"1\" --> \"*\" Ordonnance : prescrit\n    Ordonnance \"1\" *-- \"1..*\" Medicament : contient\n    Patient \"1\" --> \"*\" Ordonnance : reçoit"
+  },
+  {
+    "prompt": "Système de réservation d'hôtel : Un Client réserve une Chambre pour un Séjour. L'Hôtel possède plusieurs Chambres de différentes catégories.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Hotel {\n        +String nom\n        +String adresse\n        +int nombreEtoiles\n    }\n    class Chambre {\n        +int numero\n        +String categorie\n        +float prixNuit\n        +Boolean disponible\n    }\n    class Client {\n        +String nom\n        +String email\n        +String telephone\n    }\n    class Reservation {\n        +Date dateArrivee\n        +Date dateDepart\n        +String statut\n        +float montantTotal\n        +confirmer()\n        +annuler()\n    }\n    Hotel \"1\" *-- \"1..*\" Chambre : possède\n    Client \"1\" --> \"*\" Reservation : effectue\n    Reservation \"*\" --> \"1\" Chambre : concerne"
+  },
+  {
+    "prompt": "Réseau social : Un Utilisateur publie des Posts. Les Utilisateurs peuvent commenter et liker des Posts. Les Utilisateurs peuvent se suivre entre eux.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Utilisateur {\n        +String pseudo\n        +String email\n        +String bio\n        +publier(Post)\n        +commenter(Post, String)\n        +liker(Post)\n        +suivre(Utilisateur)\n    }\n    class Post {\n        +String contenu\n        +Date datePublication\n        +int nombreLikes\n    }\n    class Commentaire {\n        +String texte\n        +Date dateCreation\n    }\n    Utilisateur \"1\" --> \"*\" Post : publie\n    Utilisateur \"*\" --> \"*\" Post : like\n    Post \"1\" *-- \"*\" Commentaire : possède\n    Utilisateur \"1\" --> \"*\" Commentaire : rédige\n    Utilisateur \"*\" --> \"*\" Utilisateur : suit"
+  },
+  {
+    "prompt": "Système bancaire : Un Client possède un ou plusieurs Comptes. Chaque Compte enregistre des Transactions (dépôt ou retrait). Le Client peut avoir une Carte associée à un Compte.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Client {\n        +String nom\n        +String adresse\n        +String cin\n    }\n    class Compte {\n        +String iban\n        +float solde\n        +String type\n        +deposer(float)\n        +retirer(float)\n        +consulterSolde()\n    }\n    class Transaction {\n        +Date date\n        +float montant\n        +String type\n        +String description\n    }\n    class Carte {\n        +String numero\n        +Date expiration\n        +String type\n        +bloquer()\n    }\n    Client \"1\" --> \"1..*\" Compte : possède\n    Compte \"1\" *-- \"*\" Transaction : enregistre\n    Compte \"1\" --> \"0..1\" Carte : associée à"
+  },
+  {
+    "prompt": "Système de gestion scolaire : Un Étudiant s'inscrit à des Cours. Chaque Cours est enseigné par un Professeur. Les Étudiants passent des Examens pour chaque Cours et reçoivent des Notes.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Etudiant {\n        +String nom\n        +String matricule\n        +String filiere\n        +sInscrire(Cours)\n    }\n    class Cours {\n        +String intitule\n        +int volumeHoraire\n        +String semestre\n    }\n    class Professeur {\n        +String nom\n        +String grade\n        +String specialite\n    }\n    class Examen {\n        +Date date\n        +String type\n        +float duree\n    }\n    class Note {\n        +float valeur\n        +String mention\n    }\n    Etudiant \"*\" --> \"*\" Cours : inscrit\n    Professeur \"1\" --> \"*\" Cours : enseigne\n    Cours \"1\" --> \"*\" Examen : évalué par\n    Etudiant \"1\" --> \"*\" Note : reçoit\n    Note \"*\" --> \"1\" Examen : attribuée lors"
+  },
+  {
+    "prompt": "Application de livraison : Un Restaurant propose des Plats. Un Client passe une Commande contenant des Plats. Un Livreur prend en charge la Commande.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Restaurant {\n        +String nom\n        +String adresse\n        +String cuisine\n        +float notation\n    }\n    class Plat {\n        +String nom\n        +String description\n        +float prix\n        +Boolean disponible\n    }\n    class Client {\n        +String nom\n        +String adresse\n        +String telephone\n    }\n    class Commande {\n        +Date dateCommande\n        +String statut\n        +float montantTotal\n        +confirmer()\n        +annuler()\n    }\n    class Livreur {\n        +String nom\n        +String vehicule\n        +Boolean enService\n        +accepterCommande(Commande)\n    }\n    Restaurant \"1\" *-- \"1..*\" Plat : propose\n    Client \"1\" --> \"*\" Commande : passe\n    Commande \"*\" --> \"1..*\" Plat : contient\n    Livreur \"1\" --> \"*\" Commande : livre"
+  },
+  {
+    "prompt": "Gestion de projet agile : Un Projet contient des Sprints. Chaque Sprint contient des UserStories. Les UserStories sont assignées à des Développeurs.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Projet {\n        +String nom\n        +Date dateDebut\n        +Date dateFin\n        +String statut\n    }\n    class Sprint {\n        +int numero\n        +Date dateDebut\n        +Date dateFin\n        +String objectif\n    }\n    class UserStory {\n        +String titre\n        +String description\n        +int points\n        +String priorite\n        +String statut\n    }\n    class Developpeur {\n        +String nom\n        +String role\n        +String competences\n    }\n    Projet \"1\" *-- \"1..*\" Sprint : planifié en\n    Sprint \"1\" *-- \"*\" UserStory : contient\n    Developpeur \"1\" --> \"*\" UserStory : assigné à"
+  },
+  {
+    "prompt": "Système de location de voitures : Un Client loue un Véhicule. Chaque Véhicule appartient à une Agence. La location génère un Contrat et une Facture.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Client {\n        +String nom\n        +String permis\n        +String telephone\n    }\n    class Vehicule {\n        +String immatriculation\n        +String marque\n        +String modele\n        +float prixJour\n        +Boolean disponible\n    }\n    class Agence {\n        +String nom\n        +String ville\n        +String adresse\n    }\n    class Contrat {\n        +Date dateDebut\n        +Date dateFin\n        +float montant\n        +signer()\n    }\n    class Facture {\n        +String numero\n        +Date dateEmission\n        +float montantTTC\n        +Boolean payee\n    }\n    Agence \"1\" *-- \"*\" Vehicule : possède\n    Client \"1\" --> \"*\" Contrat : signe\n    Contrat \"1\" --> \"1\" Vehicule : concerne\n    Contrat \"1\" --> \"1\" Facture : génère"
+  },
+  {
+    "prompt": "Système de gestion de vol : Un Passager réserve un Vol. Un Vol est opéré par une Compagnie Aérienne et part d'un Aéroport vers un autre Aéroport.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Passager {\n        +String nom\n        +String passeport\n        +String nationalite\n    }\n    class Vol {\n        +String numero\n        +Date dateDepart\n        +Date dateArrivee\n        +String statut\n    }\n    class CompagnieAerienne {\n        +String nom\n        +String codeIATA\n    }\n    class Aeroport {\n        +String nom\n        +String codeICAO\n        +String ville\n        +String pays\n    }\n    class Reservation {\n        +String reference\n        +String classe\n        +float prix\n        +String statut\n    }\n    Passager \"1\" --> \"*\" Reservation : effectue\n    Reservation \"*\" --> \"1\" Vol : concerne\n    CompagnieAerienne \"1\" --> \"*\" Vol : opère\n    Vol \"*\" --> \"1\" Aeroport : départ\n    Vol \"*\" --> \"1\" Aeroport : arrivée"
+  },
+  {
+    "prompt": "Plateforme e-learning : Un Étudiant suit des Formations. Chaque Formation contient des Modules. Chaque Module contient des Leçons et des Quiz.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Etudiant {\n        +String nom\n        +String email\n        +int progression\n    }\n    class Formation {\n        +String titre\n        +String description\n        +String niveau\n        +float prix\n    }\n    class Module {\n        +String titre\n        +int ordre\n        +int dureeMinutes\n    }\n    class Lecon {\n        +String titre\n        +String contenu\n        +String typeMedia\n    }\n    class Quiz {\n        +String titre\n        +int nombreQuestions\n        +float noteMinimale\n    }\n    Etudiant \"*\" --> \"*\" Formation : suit\n    Formation \"1\" *-- \"1..*\" Module : contient\n    Module \"1\" *-- \"1..*\" Lecon : contient\n    Module \"1\" *-- \"0..*\" Quiz : évalué par"
+  },
+  {
+    "prompt": "Système de gestion immobilière : Un Propriétaire possède des Biens. Un Locataire loue un Bien via un Bail. Chaque mois, un Loyer est généré.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Proprietaire {\n        +String nom\n        +String telephone\n        +String email\n    }\n    class Bien {\n        +String adresse\n        +String type\n        +float surface\n        +int nombrePieces\n    }\n    class Locataire {\n        +String nom\n        +String cin\n        +String telephone\n    }\n    class Bail {\n        +Date dateDebut\n        +Date dateFin\n        +float loyerMensuel\n        +String statut\n    }\n    class Loyer {\n        +Date mois\n        +float montant\n        +Boolean paye\n        +Date datePaiement\n    }\n    Proprietaire \"1\" --> \"*\" Bien : possède\n    Locataire \"1\" --> \"*\" Bail : signe\n    Bail \"*\" --> \"1\" Bien : concerne\n    Bail \"1\" *-- \"*\" Loyer : génère"
+  },
+  {
+    "prompt": "Cas d'utilisation pour une plateforme e-commerce : Le Client consulte le catalogue, ajoute des produits au panier, passe commande et effectue le paiement. L'Admin gère les produits et les commandes.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Admin\n    usecase \"Consulter Catalogue\" as UC1\n    usecase \"Ajouter au Panier\" as UC2\n    usecase \"Passer Commande\" as UC3\n    usecase \"Effectuer Paiement\" as UC4\n    usecase \"Gérer Produits\" as UC5\n    usecase \"Gérer Commandes\" as UC6\n    usecase \"S'authentifier\" as UC7\n    Client --> UC1\n    Client --> UC2\n    Client --> UC3\n    Client --> UC4\n    Admin --> UC5\n    Admin --> UC6\n    UC3 ..> UC7 : <<include>>\n    UC3 ..> UC4 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation pour un système de gestion scolaire : L'Étudiant consulte ses notes, s'inscrit aux cours. Le Professeur saisit les notes, gère les cours. L'Admin gère les utilisateurs.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Etudiant\n    actor Professeur\n    actor Admin\n    usecase \"Consulter Notes\" as UC1\n    usecase \"S'inscrire aux Cours\" as UC2\n    usecase \"Saisir Notes\" as UC3\n    usecase \"Gérer Cours\" as UC4\n    usecase \"Gérer Utilisateurs\" as UC5\n    usecase \"S'authentifier\" as UC6\n    Etudiant --> UC1\n    Etudiant --> UC2\n    Professeur --> UC3\n    Professeur --> UC4\n    Admin --> UC5\n    UC1 ..> UC6 : <<include>>\n    UC2 ..> UC6 : <<include>>\n    UC3 ..> UC6 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation pour une application bancaire : Le Client consulte son solde, effectue un virement, demande un prêt. Le Conseiller valide les prêts. Le système vérifie l'identité.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Conseiller\n    actor \"Système Vérification\" as SV\n    usecase \"Consulter Solde\" as UC1\n    usecase \"Effectuer Virement\" as UC2\n    usecase \"Demander Prêt\" as UC3\n    usecase \"Valider Prêt\" as UC4\n    usecase \"Vérifier Identité\" as UC5\n    Client --> UC1\n    Client --> UC2\n    Client --> UC3\n    Conseiller --> UC4\n    UC2 ..> UC5 : <<include>>\n    UC3 ..> UC5 : <<include>>\n    UC4 ..> UC3 : <<extend>>\n    SV --> UC5"
+  },
+  {
+    "prompt": "Cas d'utilisation pour une bibliothèque en ligne : Le Lecteur recherche des livres, emprunte un livre, retourne un livre. Le Bibliothécaire ajoute des livres et gère les retards.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Lecteur\n    actor Bibliothécaire\n    usecase \"Rechercher Livre\" as UC1\n    usecase \"Emprunter Livre\" as UC2\n    usecase \"Retourner Livre\" as UC3\n    usecase \"Ajouter Livre\" as UC4\n    usecase \"Gérer Retards\" as UC5\n    usecase \"S'authentifier\" as UC6\n    Lecteur --> UC1\n    Lecteur --> UC2\n    Lecteur --> UC3\n    Bibliothécaire --> UC4\n    Bibliothécaire --> UC5\n    UC2 ..> UC6 : <<include>>\n    UC3 ..> UC6 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation pour un hôpital : Le Patient prend rendez-vous et consulte son dossier médical. Le Médecin consulte et prescrit. L'infirmier administre les soins.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Patient\n    actor Médecin\n    actor Infirmier\n    usecase \"Prendre RDV\" as UC1\n    usecase \"Consulter Dossier\" as UC2\n    usecase \"Consulter Patient\" as UC3\n    usecase \"Prescrire Traitement\" as UC4\n    usecase \"Administrer Soins\" as UC5\n    usecase \"S'authentifier\" as UC6\n    Patient --> UC1\n    Patient --> UC2\n    Médecin --> UC3\n    Médecin --> UC4\n    Infirmier --> UC5\n    UC3 ..> UC6 : <<include>>\n    UC4 ..> UC3 : <<extend>>"
+  },
+  {
+    "prompt": "Cas d'utilisation pour un réseau social : L'Utilisateur crée un compte, publie des posts, commente, like, et suit d'autres utilisateurs. Le Modérateur supprime le contenu inapproprié.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Utilisateur\n    actor Modérateur\n    usecase \"Créer Compte\" as UC1\n    usecase \"Publier Post\" as UC2\n    usecase \"Commenter\" as UC3\n    usecase \"Liker\" as UC4\n    usecase \"Suivre Utilisateur\" as UC5\n    usecase \"Supprimer Contenu\" as UC6\n    usecase \"S'authentifier\" as UC7\n    Utilisateur --> UC1\n    Utilisateur --> UC2\n    Utilisateur --> UC3\n    Utilisateur --> UC4\n    Utilisateur --> UC5\n    Modérateur --> UC6\n    UC2 ..> UC7 : <<include>>\n    UC6 ..> UC7 : <<include>>"
+  },
+  {
+    "prompt": "Séquence d'achat en ligne : Le Client ajoute un produit au panier, valide la commande. Le système vérifie le stock, traite le paiement via la passerelle, puis confirme.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor C as Client\n    participant UI as Interface\n    participant API as ServeurAPI\n    participant Stock as ServiceStock\n    participant Pay as PasserellePaiement\n    participant DB as BaseDeDonnées\n\n    C->>UI: Ajouter au panier\n    C->>UI: Valider commande\n    UI->>API: POST /commandes\n    API->>Stock: vérifierStock(produitId)\n    Stock-->>API: Stock disponible\n    API->>Pay: traiterPaiement(montant)\n    Pay-->>API: Paiement accepté\n    API->>DB: sauvegarderCommande()\n    DB-->>API: Commande créée\n    API-->>UI: Confirmation commande\n    UI-->>C: Afficher confirmation"
+  },
+  {
+    "prompt": "Séquence d'inscription et vérification email : L'Utilisateur remplit le formulaire. Le Backend crée le compte, envoie un email de vérification. L'Utilisateur clique sur le lien pour activer.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor U as Utilisateur\n    participant F as Frontend\n    participant B as Backend\n    participant M as ServiceEmail\n    participant DB as Database\n\n    U->>F: Remplir formulaire inscription\n    F->>B: POST /auth/register\n    B->>DB: créerUtilisateur(data)\n    DB-->>B: Utilisateur créé (inactif)\n    B->>M: envoyerEmailVerification(email, token)\n    M-->>B: Email envoyé\n    B-->>F: 201 Compte créé\n    F-->>U: Vérifiez votre email\n    U->>M: Cliquer lien vérification\n    M->>B: GET /auth/verify?token=xxx\n    B->>DB: activerCompte(userId)\n    DB-->>B: Compte activé\n    B-->>U: Compte vérifié avec succès"
+  },
+  {
+    "prompt": "Séquence de chat en temps réel : L'Utilisateur envoie un message. Le serveur WebSocket diffuse le message aux participants de la conversation.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor A as Utilisateur A\n    actor B as Utilisateur B\n    participant WS as ServeurWebSocket\n    participant DB as Database\n\n    A->>WS: connect(conversationId)\n    B->>WS: connect(conversationId)\n    A->>WS: envoyerMessage(texte)\n    WS->>DB: sauvegarderMessage(data)\n    DB-->>WS: Message sauvegardé\n    WS-->>A: confirmation envoi\n    WS-->>B: nouveau message reçu\n    B->>WS: envoyerMessage(réponse)\n    WS->>DB: sauvegarderMessage(data)\n    DB-->>WS: Message sauvegardé\n    WS-->>B: confirmation envoi\n    WS-->>A: nouveau message reçu"
+  },
+  {
+    "prompt": "Séquence de réservation de vol : Le Client recherche un vol, sélectionne, remplit les informations passager, paie, et reçoit le billet électronique.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor C as Client\n    participant UI as SiteWeb\n    participant API as APIReservation\n    participant Vols as ServiceVols\n    participant Pay as Paiement\n    participant Email as ServiceEmail\n\n    C->>UI: Rechercher vol (date, destination)\n    UI->>API: GET /vols?params\n    API->>Vols: rechercherVols(critères)\n    Vols-->>API: Liste des vols\n    API-->>UI: Résultats affichés\n    C->>UI: Sélectionner vol\n    C->>UI: Remplir infos passager\n    UI->>API: POST /reservations\n    API->>Pay: traiterPaiement(carte, montant)\n    Pay-->>API: Paiement confirmé\n    API->>Vols: réserverSiège(volId, siège)\n    Vols-->>API: Siège réservé\n    API->>Email: envoyerBilletElectronique(email)\n    Email-->>API: Envoyé\n    API-->>UI: Réservation confirmée\n    UI-->>C: Afficher billet"
+  },
+  {
+    "prompt": "Séquence de déploiement CI/CD : Le Développeur push du code. GitHub Actions lance les tests, build le Docker, et déploie sur le serveur de production.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor D as Développeur\n    participant GH as GitHub\n    participant CI as GitHubActions\n    participant Docker as DockerRegistry\n    participant Prod as ServeurProduction\n\n    D->>GH: git push origin main\n    GH->>CI: Déclencher pipeline\n    CI->>CI: npm install\n    CI->>CI: npm run test\n    alt Tests réussis\n        CI->>CI: npm run build\n        CI->>Docker: docker build & push\n        Docker-->>CI: Image publiée\n        CI->>Prod: docker pull & deploy\n        Prod-->>CI: Déploiement réussi\n        CI-->>D: Pipeline ✅ succès\n    else Tests échoués\n        CI-->>D: Pipeline ❌ échec\n    end"
+  },
+  {
+    "prompt": "Séquence de commande dans un restaurant : Le Client passe commande au Serveur. Le Serveur transmet à la Cuisine. La Cuisine prépare et notifie le Serveur quand c'est prêt.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor C as Client\n    participant S as Serveur\n    participant K as Cuisine\n    participant Ca as Caisse\n\n    C->>S: Passer commande\n    S->>K: Transmettre commande\n    K->>K: Préparer les plats\n    K-->>S: Commande prête\n    S->>C: Servir les plats\n    C->>S: Demander l'addition\n    S->>Ca: Calculer total\n    Ca-->>S: Total: 45.50€\n    S-->>C: Présenter addition\n    C->>Ca: Paiement CB\n    Ca-->>C: Reçu de paiement"
+  },
+  {
+    "prompt": "Processus de commande en ligne : Le client passe commande. Le système vérifie le stock. Si disponible, le paiement est traité. Si le paiement est accepté, la commande est expédiée. Sinon, la commande est annulée.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> PasserCommande\n    PasserCommande --> VerifierStock\n    state VerifierStock <<choice>>\n    VerifierStock --> StockIndisponible : rupture\n    VerifierStock --> TraiterPaiement : disponible\n    StockIndisponible --> CommandeAnnulee\n    state TraiterPaiement <<choice>>\n    TraiterPaiement --> PaiementRefuse : refusé\n    TraiterPaiement --> PreparerCommande : accepté\n    PaiementRefuse --> CommandeAnnulee\n    PreparerCommande --> Expedition\n    Expedition --> Livraison\n    Livraison --> [*]\n    CommandeAnnulee --> [*]"
+  },
+  {
+    "prompt": "Processus de recrutement : Le candidat postule. Les RH trient les CV. Si le profil est retenu, un entretien est planifié. Après entretien, décision d'embauche ou de refus.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> Candidature\n    Candidature --> TriCV\n    state TriCV <<choice>>\n    TriCV --> ProfilRejete : non retenu\n    TriCV --> PlanifierEntretien : retenu\n    ProfilRejete --> NotificationRefus\n    PlanifierEntretien --> Entretien\n    Entretien --> EvaluationCandidat\n    state EvaluationCandidat <<choice>>\n    EvaluationCandidat --> OffreEmploi : accepté\n    EvaluationCandidat --> NotificationRefus : refusé\n    OffreEmploi --> Integration\n    Integration --> [*]\n    NotificationRefus --> [*]"
+  },
+  {
+    "prompt": "Processus de traitement d'un ticket support : Le client soumet un ticket. Le support de niveau 1 analyse. S'il peut résoudre, il répond. Sinon, escalade au niveau 2. Le ticket est fermé après résolution.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> TicketSoumis\n    TicketSoumis --> AnalyseN1\n    state AnalyseN1 <<choice>>\n    AnalyseN1 --> ResolutionN1 : résolvable\n    AnalyseN1 --> EscaladeN2 : complexe\n    EscaladeN2 --> AnalyseN2\n    state AnalyseN2 <<choice>>\n    AnalyseN2 --> ResolutionN2 : résolu\n    AnalyseN2 --> EscaladeExpert : très complexe\n    EscaladeExpert --> ResolutionExpert\n    ResolutionN1 --> NotifierClient\n    ResolutionN2 --> NotifierClient\n    ResolutionExpert --> NotifierClient\n    NotifierClient --> FermerTicket\n    FermerTicket --> [*]"
+  },
+  {
+    "prompt": "Processus d'inscription universitaire : L'étudiant remplit le formulaire. Le système vérifie les prérequis. Si admissible, il paie les frais. Après paiement, l'inscription est confirmée.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> RemplirFormulaire\n    RemplirFormulaire --> VerifierPrerequisB\n    state VerifierPrerequisB <<choice>>\n    VerifierPrerequisB --> Inadmissible : prérequis manquants\n    VerifierPrerequisB --> ChoixOptions : admissible\n    Inadmissible --> [*]\n    ChoixOptions --> PaiementFrais\n    state PaiementFrais <<choice>>\n    PaiementFrais --> EchecPaiement : échec\n    PaiementFrais --> ConfirmationInscription : succès\n    EchecPaiement --> PaiementFrais\n    ConfirmationInscription --> AttributionCarte\n    AttributionCarte --> [*]"
+  },
+  {
+    "prompt": "Processus de livraison de colis : Le colis est préparé en entrepôt. Il est expédié au centre de tri. Le livreur le récupère et le livre. Le client signe la réception.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> PreparationEntrepot\n    PreparationEntrepot --> ExpeditionCentreTri\n    ExpeditionCentreTri --> EnCoursAcheminement\n    EnCoursAcheminement --> ArriveeDepotLocal\n    ArriveeDepotLocal --> PriseEnChargeLivreur\n    PriseEnChargeLivreur --> TentativeLivraison\n    state TentativeLivraison <<choice>>\n    TentativeLivraison --> LivraisonReussie : client présent\n    TentativeLivraison --> AvisPassage : client absent\n    AvisPassage --> SecondeTentative\n    SecondeTentative --> LivraisonReussie\n    LivraisonReussie --> SignatureReception\n    SignatureReception --> [*]"
+  },
+  {
+    "prompt": "Processus de développement logiciel : Analyse des besoins, conception, développement, tests, déploiement. Si les tests échouent, retour au développement.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> AnalyseBesoins\n    AnalyseBesoins --> Conception\n    Conception --> Developpement\n    Developpement --> Tests\n    state Tests <<choice>>\n    Tests --> Developpement : tests échoués\n    Tests --> RevueCode : tests réussis\n    RevueCode --> Deploiement\n    state Deploiement <<choice>>\n    Deploiement --> Monitoring : succès\n    Deploiement --> Rollback : échec\n    Rollback --> Developpement\n    Monitoring --> [*]"
+  },
+  {
+    "prompt": "Diagramme ER pour un système de blog : Un Auteur écrit des Articles. Les Articles ont des Tags et des Commentaires. Les Utilisateurs écrivent des Commentaires.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    AUTEUR {\n        string id PK\n        string nom\n        string email\n        string bio\n    }\n    ARTICLE {\n        string id PK\n        string titre\n        text contenu\n        date datePublication\n        string statut\n        string auteurId FK\n    }\n    TAG {\n        string id PK\n        string nom\n        string couleur\n    }\n    COMMENTAIRE {\n        string id PK\n        text contenu\n        date dateCreation\n        string articleId FK\n        string utilisateurId FK\n    }\n    UTILISATEUR {\n        string id PK\n        string pseudo\n        string email\n    }\n    AUTEUR ||--o{ ARTICLE : écrit\n    ARTICLE }o--o{ TAG : catégorisé\n    ARTICLE ||--o{ COMMENTAIRE : possède\n    UTILISATEUR ||--o{ COMMENTAIRE : rédige"
+  },
+  {
+    "prompt": "Diagramme ER pour un système de gestion de stock : Un Fournisseur livre des Produits. Les Produits sont stockés dans des Entrepôts. Les Mouvements de stock sont enregistrés.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    FOURNISSEUR {\n        string id PK\n        string nom\n        string adresse\n        string telephone\n    }\n    PRODUIT {\n        string id PK\n        string nom\n        string reference\n        float prixUnitaire\n        int quantiteStock\n    }\n    ENTREPOT {\n        string id PK\n        string nom\n        string localisation\n        int capacite\n    }\n    MOUVEMENT_STOCK {\n        string id PK\n        string type\n        int quantite\n        date dateMouvement\n        string produitId FK\n        string entrepotId FK\n    }\n    FOURNISSEUR ||--o{ PRODUIT : fournit\n    PRODUIT ||--o{ MOUVEMENT_STOCK : concerne\n    ENTREPOT ||--o{ MOUVEMENT_STOCK : enregistre"
+  },
+  {
+    "prompt": "Diagramme ER pour une plateforme de cours en ligne : Un Instructeur crée des Cours. Les Étudiants s'inscrivent et suivent des Leçons. Les Étudiants soumettent des Évaluations.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    INSTRUCTEUR {\n        string id PK\n        string nom\n        string specialite\n        string email\n    }\n    COURS {\n        string id PK\n        string titre\n        string description\n        string niveau\n        float prix\n        string instructeurId FK\n    }\n    LECON {\n        string id PK\n        string titre\n        text contenu\n        int ordre\n        string coursId FK\n    }\n    ETUDIANT {\n        string id PK\n        string nom\n        string email\n        date dateInscription\n    }\n    INSCRIPTION {\n        string id PK\n        date dateInscription\n        int progression\n        string etudiantId FK\n        string coursId FK\n    }\n    EVALUATION {\n        string id PK\n        float note\n        text commentaire\n        string etudiantId FK\n        string coursId FK\n    }\n    INSTRUCTEUR ||--o{ COURS : crée\n    COURS ||--o{ LECON : contient\n    ETUDIANT ||--o{ INSCRIPTION : effectue\n    COURS ||--o{ INSCRIPTION : reçoit\n    ETUDIANT ||--o{ EVALUATION : soumet\n    COURS ||--o{ EVALUATION : évalué"
+  },
+  {
+    "prompt": "Diagramme ER pour un système de facturation : Un Client a des Factures. Chaque Facture contient des Lignes de Facture. Les Paiements sont enregistrés pour chaque Facture.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CLIENT {\n        string id PK\n        string nom\n        string adresse\n        string email\n        string telephone\n    }\n    FACTURE {\n        string id PK\n        string numero\n        date dateEmission\n        date dateEcheance\n        float montantHT\n        float montantTTC\n        string statut\n        string clientId FK\n    }\n    LIGNE_FACTURE {\n        string id PK\n        string description\n        int quantite\n        float prixUnitaire\n        float montant\n        string factureId FK\n    }\n    PAIEMENT {\n        string id PK\n        date datePaiement\n        float montant\n        string modePaiement\n        string factureId FK\n    }\n    CLIENT ||--o{ FACTURE : reçoit\n    FACTURE ||--o{ LIGNE_FACTURE : contient\n    FACTURE ||--o{ PAIEMENT : réglée par"
+  },
+  {
+    "prompt": "Diagramme ER pour un réseau social : Un Utilisateur crée des Publications, envoie des Messages, et a des relations d'amitié avec d'autres Utilisateurs.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    UTILISATEUR {\n        string id PK\n        string pseudo\n        string email\n        string avatar\n        date dateInscription\n    }\n    PUBLICATION {\n        string id PK\n        text contenu\n        string mediaUrl\n        date dateCreation\n        int nombreLikes\n        string utilisateurId FK\n    }\n    MESSAGE {\n        string id PK\n        text contenu\n        date dateEnvoi\n        boolean lu\n        string expediteurId FK\n        string destinataireId FK\n    }\n    AMITIE {\n        string id PK\n        date dateDemande\n        string statut\n        string utilisateur1Id FK\n        string utilisateur2Id FK\n    }\n    UTILISATEUR ||--o{ PUBLICATION : publie\n    UTILISATEUR ||--o{ MESSAGE : envoie\n    UTILISATEUR ||--o{ MESSAGE : reçoit\n    UTILISATEUR ||--o{ AMITIE : demande"
+  },
+  {
+    "prompt": "Système de gestion de parking : Un Parking a des Places. Un Véhicule occupe une Place. Chaque stationnement génère un Ticket avec une durée et un tarif.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Parking {\n        +String nom\n        +String adresse\n        +int capaciteTotale\n        +int placesDisponibles()\n    }\n    class Place {\n        +int numero\n        +String type\n        +Boolean occupee\n    }\n    class Vehicule {\n        +String immatriculation\n        +String type\n        +String couleur\n    }\n    class Ticket {\n        +Date heureEntree\n        +Date heureSortie\n        +float tarif\n        +calculerMontant()\n    }\n    Parking \"1\" *-- \"1..*\" Place : contient\n    Vehicule \"0..1\" --> \"0..1\" Place : occupe\n    Vehicule \"1\" --> \"*\" Ticket : associé"
+  },
+  {
+    "prompt": "Séquence de retrait d'argent au distributeur : Le Client insère sa carte, saisit le code PIN. Le système vérifie le code, le solde, puis distribue les billets.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor C as Client\n    participant DAB as Distributeur\n    participant Bank as SystemeBancaire\n\n    C->>DAB: Insérer carte\n    DAB->>C: Demander code PIN\n    C->>DAB: Saisir code PIN\n    DAB->>Bank: Vérifier PIN(carte, pin)\n    alt PIN correct\n        Bank-->>DAB: PIN valide\n        DAB->>C: Choisir montant\n        C->>DAB: Sélectionner 200€\n        DAB->>Bank: Vérifier solde(compte, 200)\n        alt Solde suffisant\n            Bank-->>DAB: Solde OK\n            Bank->>Bank: Débiter compte\n            DAB->>C: Distribuer billets\n            DAB->>C: Éjecter carte\n        else Solde insuffisant\n            Bank-->>DAB: Solde insuffisant\n            DAB-->>C: Opération refusée\n            DAB->>C: Éjecter carte\n        end\n    else PIN incorrect\n        Bank-->>DAB: PIN invalide\n        DAB-->>C: Code incorrect\n    end"
+  },
+  {
+    "prompt": "Processus de retour produit e-commerce : Le client demande un retour. Le service vérifie l'éligibilité. Si éligible, le client expédie le produit. Après réception et inspection, le remboursement est effectué.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> DemandeRetour\n    DemandeRetour --> VerifierEligibilite\n    state VerifierEligibilite <<choice>>\n    VerifierEligibilite --> RetourRefuse : non éligible\n    VerifierEligibilite --> GenererEtiquette : éligible\n    RetourRefuse --> [*]\n    GenererEtiquette --> ExpeditionClient\n    ExpeditionClient --> ReceptionEntrepot\n    ReceptionEntrepot --> InspectionProduit\n    state InspectionProduit <<choice>>\n    InspectionProduit --> RemboursementComplet : bon état\n    InspectionProduit --> RemboursementPartiel : endommagé\n    RemboursementComplet --> NotificationClient\n    RemboursementPartiel --> NotificationClient\n    NotificationClient --> [*]"
+  },
+  {
+    "prompt": "Diagramme ER pour un système de location de véhicules : Des Clients louent des Véhicules via des Contrats. Les Véhicules appartiennent à des Agences.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CLIENT {\n        string id PK\n        string nom\n        string permis\n        string telephone\n        string email\n    }\n    VEHICULE {\n        string id PK\n        string immatriculation\n        string marque\n        string modele\n        float prixJour\n        string agenceId FK\n    }\n    AGENCE {\n        string id PK\n        string nom\n        string ville\n        string adresse\n    }\n    CONTRAT {\n        string id PK\n        date dateDebut\n        date dateFin\n        float montantTotal\n        string statut\n        string clientId FK\n        string vehiculeId FK\n    }\n    CLIENT ||--o{ CONTRAT : signe\n    VEHICULE ||--o{ CONTRAT : loué via\n    AGENCE ||--o{ VEHICULE : possède"
+  },
+  {
+    "prompt": "Cas d'utilisation pour un système de gestion de parking : Le conducteur entre dans le parking et prend un ticket. À la sortie, il paie. L'admin consulte les statistiques et gère les tarifs.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Conducteur\n    actor Admin\n    usecase \"Entrer dans Parking\" as UC1\n    usecase \"Prendre Ticket\" as UC2\n    usecase \"Payer Stationnement\" as UC3\n    usecase \"Sortir du Parking\" as UC4\n    usecase \"Consulter Statistiques\" as UC5\n    usecase \"Gérer Tarifs\" as UC6\n    Conducteur --> UC1\n    Conducteur --> UC3\n    Conducteur --> UC4\n    UC1 ..> UC2 : <<include>>\n    UC4 ..> UC3 : <<include>>\n    Admin --> UC5\n    Admin --> UC6"
+  },
+  {
+    "prompt": "Séquence d'envoi d'une notification push : Le serveur reçoit un événement, prépare la notification, l'envoie à Firebase Cloud Messaging, qui la transmet au device mobile de l'utilisateur.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant E as Événement\n    participant S as Serveur\n    participant FCM as FirebaseCM\n    participant D as DeviceMobile\n\n    E->>S: Déclencher événement\n    S->>S: Préparer notification(titre, body)\n    S->>FCM: POST /send(token, payload)\n    FCM-->>S: 200 OK Message envoyé\n    FCM->>D: Push notification\n    D-->>D: Afficher notification\n    D->>S: Notification reçue (ack)"
+  },
+  {
+    "prompt": "Processus d'authentification à deux facteurs : L'utilisateur entre son mot de passe. Si correct, le système envoie un code OTP. L'utilisateur saisit le code. Si valide, accès accordé.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> SaisieMotDePasse\n    SaisieMotDePasse --> VerificationMDP\n    state VerificationMDP <<choice>>\n    VerificationMDP --> MDPIncorrect : invalide\n    VerificationMDP --> EnvoiCodeOTP : valide\n    MDPIncorrect --> [*]\n    EnvoiCodeOTP --> SaisieCodeOTP\n    SaisieCodeOTP --> VerificationOTP\n    state VerificationOTP <<choice>>\n    VerificationOTP --> OTPIncorrect : invalide\n    VerificationOTP --> AccesAccorde : valide\n    OTPIncorrect --> SaisieCodeOTP : retry\n    AccesAccorde --> [*]"
+  },
+  {
+    "prompt": "Système de gestion d'assurance : Un Assuré souscrit à un Contrat d'assurance. Chaque Contrat couvre des Garanties. Les Sinistres sont déclarés et traités via des Réclamations.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Assure {\n        +String nom\n        +String cin\n        +String adresse\n    }\n    class Contrat {\n        +String numero\n        +Date dateDebut\n        +Date dateFin\n        +float prime\n        +String statut\n    }\n    class Garantie {\n        +String type\n        +float plafond\n        +String conditions\n    }\n    class Sinistre {\n        +Date dateSinistre\n        +String description\n        +float montantEstime\n    }\n    class Reclamation {\n        +String numero\n        +Date dateDeclaration\n        +String statut\n        +float montantRembourse\n    }\n    Assure \"1\" --> \"*\" Contrat : souscrit\n    Contrat \"1\" *-- \"1..*\" Garantie : couvre\n    Assure \"1\" --> \"*\" Sinistre : déclare\n    Sinistre \"1\" --> \"1\" Reclamation : traitée via\n    Reclamation \"*\" --> \"1\" Contrat : liée à"
+  },
+  {
+    "prompt": "Gestion de Clinique Vétérinaire : Un Animal appartient à un Client. Un Vétérinaire effectue des Consultations pour les Animaux.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Client {\n        +String nom\n        +String telephone\n    }\n    class Animal {\n        +String nom\n        +String espece\n        +int age\n    }\n    class Veterinaire {\n        +String nom\n        +String specialite\n    }\n    class Consultation {\n        +Date date\n        +String diagnostic\n        +float tarif\n    }\n    Client \"1\" --> \"*\" Animal : possede\n    Veterinaire \"1\" --> \"*\" Consultation : effectue\n    Consultation \"*\" --> \"1\" Animal : concerne"
+  },
+  {
+    "prompt": "Système de Club de Fitness : Un Membre souscrit à un Abonnement. Des Entraîneurs animent des Cours collectifs auxquels participent les Membres.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Membre {\n        +String nom\n        +String codeBarre\n        +participer(Cours)\n    }\n    class Abonnement {\n        +String type\n        +Date dateFin\n        +float tarifMensuel\n    }\n    class Entraineur {\n        +String nom\n        +String specialite\n    }\n    class Cours {\n        +String nom\n        +Date horaire\n        +int capacite\n    }\n    Membre \"1\" --> \"1\" Abonnement : souscrit\n    Entraineur \"1\" --> \"*\" Cours : anime\n    Membre \"*\" --> \"*\" Cours : participe"
+  },
+  {
+    "prompt": "Plateforme de Streaming Vidéo : Un Abonné crée des Profils. Chaque Profil peut ajouter des Vidéos à sa Liste de lecture. Les Vidéos appartiennent à des Catégories.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Abonne {\n        +String email\n        +String motDePasse\n        +String statutPaiement\n    }\n    class Profil {\n        +String nom\n        +Boolean estEnfant\n    }\n    class Video {\n        +String titre\n        +int dureeSecondes\n        +String urlStream\n    }\n    class Categorie {\n        +String nom\n        +String description\n    }\n    Abonne \"1\" *-- \"1..5\" Profil : contient\n    Profil \"1\" --> \"*\" Video : ajoute a sa liste\n    Video \"*\" --> \"1..*\" Categorie : appartient a"
+  },
+  {
+    "prompt": "Agence de Recrutement : Un Candidat postule à des Offres d'Emploi. Un Chargé de Recrutement planifie des Entretiens entre les Candidats et les Entreprises.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Candidat {\n        +String nom\n        +String cvUrl\n        +postuler(Offre)\n    }\n    class Offre {\n        +String titre\n        +String description\n        +float salaire\n    }\n    class Entreprise {\n        +String nom\n        +String secteur\n    }\n    class Entretien {\n        +Date dateHeure\n        +String type\n    }\n    class Recruteur {\n        +String nom\n    }\n    Candidat \"1\" --> \"*\" Offre : postule\n    Entreprise \"1\" *-- \"*\" Offre : propose\n    Recruteur \"1\" --> \"*\" Entretien : planifie\n    Entretien \"*\" --> \"1\" Candidat : concerne\n    Entretien \"*\" --> \"1\" Offre : concerne"
+  },
+  {
+    "prompt": "Gestion de Flotte Logistique : Un Chauffeur conduit un Camion. Le Camion transporte une Cargaison sur un Trajet défini.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Chauffeur {\n        +String nom\n        +String permis\n    }\n    class Camion {\n        +String immatriculation\n        +float chargeUtile\n    }\n    class Cargaison {\n        +String description\n        +float poids\n    }\n    class Trajet {\n        +String villeDepart\n        +String villeArrivee\n        +int distanceKm\n    }\n    Chauffeur \"1\" --> \"0..1\" Camion : conduit\n    Camion \"1\" --> \"*\" Cargaison : transporte\n    Cargaison \"*\" --> \"1\" Trajet : associee a"
+  },
+  {
+    "prompt": "Gestion de Tâches Collaboratives : Un Collaborateur crée des Tâches dans un Projet. Chaque Tâche peut avoir des Commentaires rédigés par les Collaborateurs.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Projet {\n        +String nom\n        +String description\n    }\n    class Tache {\n        +String titre\n        +String statut\n        +Date dateLimite\n    }\n    class Collaborateur {\n        +String nom\n        +String email\n    }\n    class Commentaire {\n        +String contenu\n        +Date dateHeure\n    }\n    Projet \"1\" *-- \"*\" Tache : contient\n    Collaborateur \"1\" --> \"*\" Tache : cree\n    Collaborateur \"1\" --> \"*\" Tache : assigne a\n    Tache \"1\" *-- \"*\" Commentaire : possede\n    Collaborateur \"1\" --> \"*\" Commentaire : redige"
+  },
+  {
+    "prompt": "Système de Vote Électronique : Un Électeur vote dans un Bureau de Vote pour un Scrutin. Le vote génère un Bulletin anonyme.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Electeur {\n        +String cin\n        +String nom\n        +Boolean aVote\n    }\n    class BureauVote {\n        +int numero\n        +String localisation\n    }\n    class Scrutin {\n        +String titre\n        +Date date\n    }\n    class Bulletin {\n        +Date dateHeure\n        +String choix\n    }\n    BureauVote \"1\" --> \"*\" Electeur : affecte a\n    Electeur \"1\" --> \"1\" Bulletin : depose\n    Scrutin \"1\" *-- \"*\" Bulletin : comptabilise"
+  },
+  {
+    "prompt": "Station Météo Connectée : Une Station contient plusieurs Capteurs. Chaque Capteur enregistre des Mesures. Si une mesure dépasse un seuil, une Alerte est créée.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Station {\n        +String nom\n        +String coordonnees\n    }\n    class Capteur {\n        +String type\n        +String uniteMesure\n    }\n    class Mesure {\n        +float valeur\n        +Date dateHeure\n    }\n    class Alerte {\n        +String message\n        +String niveauGravite\n        +Date dateAlerte\n    }\n    Station \"1\" *-- \"1..*\" Capteur : equipee de\n    Capteur \"1\" *-- \"*\" Mesure : enregistre\n    Mesure \"1\" --> \"0..1\" Alerte : declenche"
+  },
+  {
+    "prompt": "Système domotique intelligent : Une Maison possède des Pièces. Chaque Pièce contient des Appareils connectés (Lampes, Volets) contrôlés par un Hub central.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Maison {\n        +String adresse\n    }\n    class Piece {\n        +String nom\n        +int etage\n    }\n    class Appareil {\n        +String nom\n        +Boolean etat\n        +allumer()\n        +eteindre()\n    }\n    class Hub {\n        +String adresseIP\n        +String micrologicielVersion\n        +synchroniser()\n    }\n    Maison \"1\" *-- \"1..*\" Piece : possede\n    Piece \"1\" *-- \"*\" Appareil : contient\n    Hub \"1\" --> \"*\" Appareil : controle"
+  },
+  {
+    "prompt": "Gestion d'un Salon de Coiffure : Un Coiffeur réalise des Prestations pour un Client lors d'un Rendez-Vous.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Coiffeur {\n        +String nom\n        +String specialite\n    }\n    class Client {\n        +String nom\n        +String telephone\n    }\n    class Prestation {\n        +String nom\n        +float prix\n        +int dureeMinutes\n    }\n    class RendezVous {\n        +Date dateHeure\n        +String statut\n    }\n    Client \"1\" --> \"*\" RendezVous : prend\n    Coiffeur \"1\" --> \"*\" RendezVous : anime\n    RendezVous \"*\" --> \"1..*\" Prestation : concerne"
+  },
+  {
+    "prompt": "Centre de Lavage Auto : Un Client réserve une Formule de lavage pour son Véhicule à une date donnée.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Client {\n        +String nom\n        +String email\n    }\n    class Vehicule {\n        +String plaque\n        +String marque\n        +String modele\n    }\n    class Formule {\n        +String nom\n        +float tarif\n        +String options\n    }\n    class Reservation {\n        +Date dateHeure\n        +String statut\n    }\n    Client \"1\" *-- \"*\" Vehicule : possede\n    Reservation \"*\" --> \"1\" Vehicule : concerne\n    Reservation \"*\" --> \"1\" Formule : choisit"
+  },
+  {
+    "prompt": "Garage de Réparations Auto : Un Mécanicien effectue des Réparations sur une Voiture. Chaque réparation donne lieu à une Facture.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Mecanicien {\n        +String nom\n        +String qualification\n    }\n    class Voiture {\n        +String immatriculation\n        +String proprietaire\n    }\n    class Reparation {\n        +String description\n        +float coûtPieces\n        +float coûtMainOeuvre\n    }\n    class Facture {\n        +String reference\n        +float montantTotal\n        +Boolean payee\n    }\n    Mecanicien \"1\" --> \"*\" Reparation : effectue\n    Reparation \"*\" --> \"1\" Voiture : concerne\n    Reparation \"1\" --> \"1\" Facture : genere"
+  },
+  {
+    "prompt": "Agence de Voyages : Un Guide accompagne des Touristes lors de Voyages organisés. Chaque voyage comprend plusieurs Activités.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Guide {\n        +String nom\n        +String languesParlees\n    }\n    class Touriste {\n        +String nom\n        +String passeport\n    }\n    class Voyage {\n        +String destination\n        +Date dateDepart\n        +float prix\n    }\n    class Activite {\n        +String titre\n        +String description\n        +float prixSupplementaire\n    }\n    Guide \"1\" --> \"*\" Voyage : encadre\n    Touriste \"*\" --> \"*\" Voyage : participe\n    Voyage \"1\" *-- \"1..*\" Activite : contient"
+  },
+  {
+    "prompt": "Gestion d'Événements : Un Organisateur planifie des Événements. Les Participants achètent des Billets pour assister à ces Événements.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Organisateur {\n        +String nom\n        +String contact\n    }\n    class Evenement {\n        +String nom\n        +Date date\n        +String lieu\n        +int capaciteMax\n    }\n    class Participant {\n        +String nom\n        +String email\n    }\n    class Billet {\n        +String codeUnique\n        +float prix\n        +String categorie\n    }\n    Organisateur \"1\" --> \"*\" Evenement : planifie\n    Evenement \"1\" *-- \"*\" Billet : emet\n    Participant \"1\" --> \"*\" Billet : achete"
+  },
+  {
+    "prompt": "Système d'Enchères en Ligne : Un Vendeur propose des Objets. Des Acheteurs soumettent des Offres d'enchères sur ces Objets.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Vendeur {\n        +String nom\n        +float evaluation\n    }\n    class Objet {\n        +String titre\n        +float prixDepart\n        +Date dateFinEnchere\n    }\n    class Acheteur {\n        +String nom\n        +String email\n    }\n    class Offre {\n        +float montant\n        +Date dateHeure\n    }\n    Vendeur \"1\" --> \"*\" Objet : met en vente\n    Objet \"1\" *-- \"*\" Offre : reçoit\n    Acheteur \"1\" --> \"*\" Offre : soumet"
+  },
+  {
+    "prompt": "Gestion d'une Pizzeria : Un Client passe une Commande. La commande contient des Pizzas. Chaque pizza nécessite des Ingrédients.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Client {\n        +String nom\n        +String telephone\n    }\n    class Commande {\n        +int numero\n        +Date dateHeure\n        +String statut\n    }\n    class Pizza {\n        +String nom\n        +float prix\n    }\n    class Ingredient {\n        +String nom\n        +int stockGrammes\n    }\n    Client \"1\" --> \"*\" Commande : passe\n    Commande \"1\" *-- \"1..*\" Pizza : contient\n    Pizza \"*\" --> \"1..*\" Ingredient : utilise"
+  },
+  {
+    "prompt": "Gestion de Compagnie d'Assurance : Un Client souscrit à des Contrats. Un contrat couvre des Sinistres déclarés par le client.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Client {\n        +String nom\n        +String nif\n    }\n    class Contrat {\n        +String numero\n        +Date debut\n        +float primeAnnuelle\n    }\n    class Sinistre {\n        +Date date\n        +String rapport\n        +float coutEstime\n    }\n    Client \"1\" --> \"*\" Contrat : souscrit\n    Contrat \"1\" *-- \"*\" Sinistre : couvre\n    Client \"1\" --> \"*\" Sinistre : declare"
+  },
+  {
+    "prompt": "Système de covoiturage : Un Conducteur propose un Trajet avec des Places disponibles. Les Passagers réservent des places sur ce Trajet.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Conducteur {\n        +String nom\n        +String permis\n    }\n    class Trajet {\n        +String depart\n        +String destination\n        +Date departHeure\n        +int placesTotales\n        +float prixParPlace\n    }\n    class Passager {\n        +String nom\n        +String telephone\n    }\n    class Reservation {\n        +int nbPlacesReservees\n        +String statut\n    }\n    Conducteur \"1\" --> \"*\" Trajet : propose\n    Passager \"1\" --> \"*\" Reservation : effectue\n    Trajet \"1\" *-- \"*\" Reservation : enregistre"
+  },
+  {
+    "prompt": "Système d'agence immobilière : Un Agent immobilier gère des Biens immobiliers proposés par des Propriétaires pour des Acheteurs intéressés.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Agent {\n        +String nom\n        +String matricule\n    }\n    class Proprietaire {\n        +String nom\n        +String telephone\n    }\n    class Bien {\n        +String adresse\n        +float prix\n        +String statut\n    }\n    class Acheteur {\n        +String nom\n        +float budget\n    }\n    Proprietaire \"1\" --> \"*\" Bien : possede\n    Agent \"1\" --> \"*\" Bien : gere\n    Acheteur \"*\" --> \"*\" Bien : visite"
+  },
+  {
+    "prompt": "Système de cinéma : Un Cinéma possède des Salles. Chaque salle projette des Séances de Films. Les Clients réservent des Sièges pour une Séance.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Cinema {\n        +String nom\n        +String adresse\n    }\n    class Salle {\n        +int numero\n        +int capacite\n    }\n    class Film {\n        +String titre\n        +int dureeMinutes\n    }\n    class Seance {\n        +Date horaire\n        +float tarif\n    }\n    class Client {\n        +String nom\n    }\n    class Reservation {\n        +int nbPlaces\n        +float montant\n    }\n    Cinema \"1\" *-- \"1..*\" Salle : possede\n    Salle \"1\" --> \"*\" Seance : accueille\n    Film \"1\" --> \"*\" Seance : projete lors de\n    Client \"1\" --> \"*\" Reservation : effectue\n    Seance \"1\" *-- \"*\" Reservation : contient"
+  },
+  {
+    "prompt": "Gestion de Musée : Un Musée organise des Expositions. Les expositions présentent des Œuvres d'Art créées par des Artistes.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Musee {\n        +String nom\n        +String ville\n    }\n    class Exposition {\n        +String titre\n        +Date dateDebut\n        +Date dateFin\n    }\n    class Oeuvre {\n        +String titre\n        +int anneeCreation\n        +String type\n    }\n    class Artiste {\n        +String nom\n        +String nationalite\n    }\n    Musee \"1\" *-- \"*\" Exposition : organise\n    Exposition \"1\" *-- \"1..*\" Oeuvre : presente\n    Artiste \"1\" --> \"*\" Oeuvre : cree"
+  },
+  {
+    "prompt": "Système de parking automatique : Un Parking contient des Zones. Chaque zone possède des Places. Des Capteurs détectent l'occupation des places.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Parking {\n        +String nom\n    }\n    class Zone {\n        +String code\n    }\n    class Place {\n        +int numero\n        +Boolean occupee\n    }\n    class Capteur {\n        +String identifiant\n        +Boolean statutFonctionnement\n    }\n    Parking \"1\" *-- \"1..*\" Zone : contient\n    Zone \"1\" *-- \"1..*\" Place : contient\n    Capteur \"1\" --> \"1\" Place : surveille"
+  },
+  {
+    "prompt": "Gestion de Port de Plaisance : Un Port loue des Emplacements de quai à des Bateaux de plaisance appartenant à des Propriétaires.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Port {\n        +String nom\n        +String localite\n    }\n    class Emplacement {\n        +String code\n        +float longueurMax\n        +Boolean estOccupe\n    }\n    class Bateau {\n        +String nom\n        +String immatriculation\n        +float longueur\n    }\n    class Proprietaire {\n        +String nom\n        +String telephone\n    }\n    Port \"1\" *-- \"1..*\" Emplacement : contient\n    Proprietaire \"1\" --> \"1..*\" Bateau : possede\n    Emplacement \"1\" --> \"0..1\" Bateau : loue a"
+  },
+  {
+    "prompt": "Système d'irrigation connecté : Un Contrôleur pilote des Vannes d'arrosage en fonction des données de Capteurs d'humidité du sol.",
+    "type": "CLASS",
+    "mermaid": "classDiagram\n    class Controleur {\n        +String idController\n        +analyserDonnees()\n    }\n    class Vanne {\n        +int canal\n        +Boolean ouverte\n        +ouvrir()\n        +fermer()\n    }\n    class CapteurHumidite {\n        +String codeCapteur\n        +float tauxHumidite\n        +lireHumidite()\n    }\n    Controleur \"1\" --> \"1..*\" Vanne : pilote\n    Controleur \"1\" --> \"1..*\" CapteurHumidite : lit"
+  },
+  {
+    "prompt": "Cas d'utilisation domotique : L'Utilisateur contrôle le chauffage, programme les lumières, et l'Installateur configure le système.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Utilisateur\n    actor Installateur\n    usecase \"Controler chauffage\" as UC1\n    usecase \"Programmer lumieres\" as UC2\n    usecase \"Configurer systeme\" as UC3\n    usecase \"S'authentifier\" as UC4\n    Utilisateur --> UC1\n    Utilisateur --> UC2\n    Installateur --> UC3\n    UC1 ..> UC4 : <<include>>\n    UC2 ..> UC4 : <<include>>\n    UC3 ..> UC4 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation pour une salle de sport : Le Membre réserve un cours et consulte son abonnement. L'Entraîneur planifie les cours.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Membre\n    actor Entraineur\n    usecase \"Reserver cours\" as UC1\n    usecase \"Consulter abonnement\" as UC2\n    usecase \"Planifier cours\" as UC3\n    usecase \"S'authentifier\" as UC4\n    Membre --> UC1\n    Membre --> UC2\n    Entraineur --> UC3\n    UC1 ..> UC4 : <<include>>\n    UC3 ..> UC4 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation pour le recrutement : Le Candidat dépose son CV et postule. Le Recruteur trie les CV et planifie un entretien.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Candidat\n    actor Recruteur\n    usecase \"Deposer CV\" as UC1\n    usecase \"Postuler\" as UC2\n    usecase \"Trier CV\" as UC3\n    usecase \"Planifier entretien\" as UC4\n    Candidat --> UC1\n    Candidat --> UC2\n    Recruteur --> UC3\n    Recruteur --> UC4\n    UC2 ..> UC1 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation de vote électronique : L'Électeur s'authentifie, sélectionne son choix, et vote. L'Administrateur clôture le scrutin.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Electeur\n    actor Administrateur\n    usecase \"S'authentifier\" as UC1\n    usecase \"Choisir candidat\" as UC2\n    usecase \"Voter\" as UC3\n    usecase \"Cloturer scrutin\" as UC4\n    Electeur --> UC1\n    Electeur --> UC3\n    Administrateur --> UC4\n    UC3 ..> UC1 : <<include>>\n    UC3 ..> UC2 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation Food Truck : Le Client commande et paie. Le Cuisinier prépare la commande. Le Caissier encaisse.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Cuisinier\n    actor Caissier\n    usecase \"Commander\" as UC1\n    usecase \"Payer commande\" as UC2\n    usecase \"Preparer plats\" as UC3\n    usecase \"Encaisser\" as UC4\n    Client --> UC1\n    Client --> UC2\n    Cuisinier --> UC3\n    Caissier --> UC4\n    UC2 ..> UC4 : <<extend>>"
+  },
+  {
+    "prompt": "Cas d'utilisation de location de voiture : Le Client réserve une voiture. L'Agent de location vérifie le permis et livre le véhicule.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Agent\n    usecase \"Reserver vehicule\" as UC1\n    usecase \"Verifier permis\" as UC2\n    usecase \"Livrer vehicule\" as UC3\n    usecase \"S'authentifier\" as UC4\n    Client --> UC1\n    Agent --> UC2\n    Agent --> UC3\n    UC2 ..> UC4 : <<include>>\n    UC3 ..> UC4 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation réservation de vol : Le Client recherche un vol et réserve son billet. L'Agent de voyage modifie les réservations.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Agent\n    usecase \"Rechercher vol\" as UC1\n    usecase \"Reserver billet\" as UC2\n    usecase \"Modifier reservation\" as UC3\n    usecase \"S'authentifier\" as UC4\n    Client --> UC1\n    Client --> UC2\n    Agent --> UC3\n    UC2 ..> UC4 : <<include>>\n    UC3 ..> UC4 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation accueil hôtel : Le Client fait son check-in et récupère sa clé. Le Réceptionniste attribue la chambre.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Receptionniste\n    usecase \"Faire check-in\" as UC1\n    usecase \"Recuperer clef\" as UC2\n    usecase \"Attribuer chambre\" as UC3\n    Client --> UC1\n    Client --> UC2\n    Receptionniste --> UC3\n    UC1 ..> UC3 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation pour le système scolaire : L'Étudiant consulte son emploi du temps. Le Professeur saisit les absences. L'Admin crée les classes.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Etudiant\n    actor Professeur\n    actor Admin\n    usecase \"Consulter emploi du temps\" as UC1\n    usecase \"Saisir absences\" as UC2\n    usecase \"Creer classes\" as UC3\n    Etudiant --> UC1\n    Professeur --> UC2\n    Admin --> UC3"
+  },
+  {
+    "prompt": "Cas d'utilisation plateforme e-learning : L'Apprenant suit un cours et passe un quiz. L'Enseignant publie les cours.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Apprenant\n    actor Enseignant\n    usecase \"Suivre cours\" as UC1\n    usecase \"Passer quiz\" as UC2\n    usecase \"Publier cours\" as UC3\n    Apprenant --> UC1\n    Apprenant --> UC2\n    Enseignant --> UC3\n    UC2 ..> UC1 : <<extend>>"
+  },
+  {
+    "prompt": "Cas d'utilisation pour capteurs IoT : L'Opérateur configure les capteurs. Le Système de supervision déclenche une alerte si anomalie.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Operateur\n    actor Systeme\n    usecase \"Configurer capteurs\" as UC1\n    usecase \"Visualiser donnees\" as UC2\n    usecase \"Declencher alerte\" as UC3\n    Operateur --> UC1\n    Operateur --> UC2\n    Systeme --> UC3\n    UC3 ..> UC2 : <<extend>>"
+  },
+  {
+    "prompt": "Cas d'utilisation bibliothèque : L'Adhérent prolonge son emprunt. Le Bibliothécaire gère le catalogue et enregistre les retours.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Adherent\n    actor Bibliothecaire\n    usecase \"Prolonger emprunt\" as UC1\n    usecase \"Gerer catalogue\" as UC2\n    usecase \"Enregistrer retour\" as UC3\n    Adherent --> UC1\n    Bibliothecaire --> UC2\n    Bibliothecaire --> UC3"
+  },
+  {
+    "prompt": "Cas d'utilisation d'agence immobilière : Le Client potentiel recherche un bien. Le Propriétaire met son bien en vente.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Proprietaire\n    usecase \"Rechercher bien\" as UC1\n    usecase \"Visiter bien\" as UC2\n    usecase \"Mettre en vente\" as UC3\n    Client --> UC1\n    Client --> UC2\n    Proprietaire --> UC3\n    UC2 ..> UC1 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation hôpital : Le Patient consulte un médecin. L'Infirmier administre les médicaments. Le Médecin rédige une ordonnance.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Patient\n    actor Medecin\n    actor Infirmier\n    usecase \"Consulter medecin\" as UC1\n    usecase \"Administrer medicaments\" as UC2\n    usecase \"Rediger ordonnance\" as UC3\n    Patient --> UC1\n    Medecin --> UC3\n    Infirmier --> UC2\n    UC3 ..> UC1 : <<extend>>"
+  },
+  {
+    "prompt": "Cas d'utilisation de restaurant : Le Client réserve une table et commande. Le Serveur sert les plats et encaisse.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Serveur\n    usecase \"Reserver table\" as UC1\n    usecase \"Commander plats\" as UC2\n    usecase \"Servir plats\" as UC3\n    usecase \"Encaisser paiement\" as UC4\n    Client --> UC1\n    Client --> UC2\n    Serveur --> UC3\n    Serveur --> UC4"
+  },
+  {
+    "prompt": "Cas d'utilisation d'enchères en ligne : L'Acheteur enchérit. Le Vendeur publie une annonce. L'Admin valide les ventes.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Acheteur\n    actor Vendeur\n    actor Admin\n    usecase \"Encherir\" as UC1\n    usecase \"Publier annonce\" as UC2\n    usecase \"Valider vente\" as UC3\n    usecase \"S'authentifier\" as UC4\n    Acheteur --> UC1\n    Vendeur --> UC2\n    Admin --> UC3\n    UC1 ..> UC4 : <<include>>\n    UC2 ..> UC4 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation vente de billets : L'Abonné achète un billet en ligne. L'Organisateur modifie la programmation de l'événement.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Abonne\n    actor Organisateur\n    usecase \"Acheter billet\" as UC1\n    usecase \"Modifier programmation\" as UC2\n    usecase \"S'authentifier\" as UC3\n    Abonne --> UC1\n    Organisateur --> UC2\n    UC1 ..> UC3 : <<include>>\n    UC2 ..> UC3 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation autopartage : L'Utilisateur déverrouille le véhicule via l'application. Le Technicien effectue la maintenance.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Utilisateur\n    actor Technicien\n    usecase \"Localiser vehicule\" as UC1\n    usecase \"Deverrouiller vehicule\" as UC2\n    usecase \"Declarer panne\" as UC3\n    usecase \"Maintenance vehicule\" as UC4\n    Utilisateur --> UC1\n    Utilisateur --> UC2\n    Utilisateur --> UC3\n    Technicien --> UC4\n    UC2 ..> UC1 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation banque en ligne : Le Client effectue un virement interne. Le Service support réinitialise le code d'accès.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Support\n    usecase \"Faire virement\" as UC1\n    usecase \"Reinitialiser code\" as UC2\n    usecase \"S'authentifier\" as UC3\n    Client --> UC1\n    Support --> UC2\n    UC1 ..> UC3 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation pharmacie : Le Client achète des médicaments. Le Pharmacien vérifie l'ordonnance et valide la couverture mutuelle.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Pharmacien\n    usecase \"Acheter medicaments\" as UC1\n    usecase \"Verifier ordonnance\" as UC2\n    usecase \"Valider mutuelle\" as UC3\n    Client --> UC1\n    Pharmacien --> UC2\n    Pharmacien --> UC3\n    UC1 ..> UC2 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation vélopartage : L'Usager loue un vélo et signale un problème. Le Technicien récupère le vélo défectueux.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Usager\n    actor Technicien\n    usecase \"Louer velo\" as UC1\n    usecase \"Signaler probleme\" as UC2\n    usecase \"Reparer velo\" as UC3\n    Usager --> UC1\n    Usager --> UC2\n    Technicien --> UC3"
+  },
+  {
+    "prompt": "Cas d'utilisation caisse automatique : Le Client scanne ses articles et paie par carte. L'Assistant de caisse résout les blocages.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Assistant\n    usecase \"Scanner articles\" as UC1\n    usecase \"Payer par carte\" as UC2\n    usecase \"Debloquer caisse\" as UC3\n    Client --> UC1\n    Client --> UC2\n    Assistant --> UC3\n    UC2 ..> UC1 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation App Store : Le Développeur soumet une application. L'Administrateur vérifie la conformité et la publie.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Developpeur\n    actor Admin\n    usecase \"Soumettre app\" as UC1\n    usecase \"Verifier conformite\" as UC2\n    usecase \"Publier app\" as UC3\n    Developpeur --> UC1\n    Admin --> UC2\n    Admin --> UC3\n    UC3 ..> UC2 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation stockage Cloud : L'Utilisateur télécharge un fichier et le partage avec un lien. L'Admin surveille le quota global.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Utilisateur\n    actor Admin\n    usecase \"Telecharger fichier\" as UC1\n    usecase \"Partager lien\" as UC2\n    usecase \"Surveiller quota\" as UC3\n    Utilisateur --> UC1\n    Utilisateur --> UC2\n    Admin --> UC3\n    UC2 ..> UC1 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation webinaire : Le Conférencier partage son écran. Le Participant pose des questions dans le chat.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Conferencier\n    actor Participant\n    usecase \"Partager ecran\" as UC1\n    usecase \"Rejoindre session\" as UC2\n    usecase \"Poser question\" as UC3\n    Conferencier --> UC1\n    Participant --> UC2\n    Participant --> UC3\n    UC3 ..> UC2 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation hôtel (personnel) : Le Valet de chambre marque la chambre propre. Le Réceptionniste vérifie la disponibilité.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Valet\n    actor Receptionniste\n    usecase \"Marquer propre\" as UC1\n    usecase \"Verifier disponibilite\" as UC2\n    Valet --> UC1\n    Receptionniste --> UC2\n    UC2 ..> UC1 : <<extend>>"
+  },
+  {
+    "prompt": "Cas d'utilisation portail emploi : Le Chercheur d'emploi crée une alerte. Le Recruteur publie une offre d'emploi.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Candidat as \"Chercheur d'emploi\"\n    actor Recruteur\n    usecase \"Creer alerte mail\" as UC1\n    usecase \"Publier offre\" as UC2\n    Candidat --> UC1\n    Recruteur --> UC2"
+  },
+  {
+    "prompt": "Cas d'utilisation adoption animaux : L'Adoptant remplit le formulaire d'adoption. L'Agent du refuge valide l'adoption.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Adoptant\n    actor Agent\n    usecase \"Remplir formulaire\" as UC1\n    usecase \"Valider adoption\" as UC2\n    Adoptant --> UC1\n    Agent --> UC2\n    UC2 ..> UC1 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation livraison repas : Le Client note la livraison. Le Livreur accepte la course.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Livreur\n    usecase \"Noter livraison\" as UC1\n    usecase \"Accepter course\" as UC2\n    Client --> UC1\n    Livreur --> UC2"
+  },
+  {
+    "prompt": "Cas d'utilisation guichet cinéma : Le Client réserve sa place. Le Caissier imprime le ticket physique.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Client\n    actor Caissier\n    usecase \"Reserver place\" as UC1\n    usecase \"Imprimer ticket\" as UC2\n    Client --> UC1\n    Caissier --> UC2\n    UC2 ..> UC1 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation plateforme musicale : L'Artiste uploade un album. Le Modérateur valide le contenu audio.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Artiste\n    actor Modérateur\n    usecase \"Uploader album\" as UC1\n    usecase \"Valider contenu\" as UC2\n    Artiste --> UC1\n    Modérateur --> UC2\n    UC2 ..> UC1 : <<include>>"
+  },
+  {
+    "prompt": "Cas d'utilisation parking de gare : L'Usager paie sa carte d'abonnement. L'Automate valide le ticket à la barrière.",
+    "type": "USE_CASE",
+    "mermaid": "useCaseDiagram\n    actor Usager\n    actor Automate\n    usecase \"Payer abonnement\" as UC1\n    usecase \"Valider ticket\" as UC2\n    Usager --> UC1\n    Automate --> UC2"
+  },
+  {
+    "prompt": "Séquence de télémétrie IoT : Le capteur envoie l'humidité à la passerelle. La passerelle la transmet au cloud.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant S as Capteur\n    participant G as Passerelle\n    participant C as Cloud\n    S->>G: Envoyer humidite(float)\n    G->>C: Transmettre paquet(data)\n    C-->>G: Confirmation réception\n    G-->>S: Ack"
+  },
+  {
+    "prompt": "Séquence 2FA : L'utilisateur saisit son MDP. Le système valide, envoie un code par SMS. L'utilisateur saisit le code.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor U as Utilisateur\n    participant S as Systeme\n    participant SMS as PasserelleSMS\n    U->>S: Saisir mot de passe\n    S->>S: Verifier MDP\n    S->>SMS: Envoyer code OTP\n    SMS-->>U: Code reçu par SMS\n    U->>S: Saisir code OTP\n    S->>S: Verifier code\n    S-->>U: Acces accorde"
+  },
+  {
+    "prompt": "Séquence de réinitialisation de mot de passe : L'utilisateur clique sur oublier. Le serveur génère un token, envoie un email.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor U as Utilisateur\n    participant W as WebApp\n    participant API as ServeurAPI\n    participant M as Mailer\n    U->>W: Cliquer sur 'Mot de passe oublié'\n    W->>API: POST /reset-password(email)\n    API->>API: Generer token unique\n    API->>M: Envoyer email avec lien\n    M-->>U: Recevoir email de reset\n    U->>W: Saisir nouveau mot de passe\n    W->>API: POST /update-password(token, pass)\n    API-->>W: MDP mis a jour\n    W-->>U: Confirmation modifications"
+  },
+  {
+    "prompt": "Séquence de validation de panier : Le panier valide l'inventaire, effectue la transaction financière et met à jour le stock.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant C as Panier\n    participant I as Inventaire\n    participant P as ServicePaiement\n    participant DB as BaseDonnées\n    C->>I: Verifier disponibilite(articles)\n    I-->>C: Stock disponible\n    C->>P: Autoriser transaction(total)\n    P-->>C: Paiement accepte\n    C->>I: Deduire quantite(articles)\n    I->>DB: Sauvegarder stock()\n    C-->>C: Clôturer panier"
+  },
+  {
+    "prompt": "Séquence de réservation de vol (GDS) : L'API interroge le GDS pour les vols disponibles, puis réserve le siège choisi.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant UI as Interface\n    participant API as ServeurAPI\n    participant GDS as SystemeGDS\n    UI->>API: Rechercher vols(params)\n    API->>GDS: Requete vols dispo\n    GDS-->>API: Liste vols et prix\n    API-->>UI: Afficher resultats\n    UI->>API: Confirmer choix siege(volId, siege)\n    API->>GDS: Bloquer siege(volId, siege)\n    GDS-->>API: Siege bloque\n    API-->>UI: Siege reserve avec succes"
+  },
+  {
+    "prompt": "Séquence de réplication de base de données : Le noeud primaire applique les modifs et les transmet au noeud secondaire.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant P as NodePrimaire\n    participant S as NodeSecondaire\n    P->>P: Appliquer transaction localement\n    P->>S: Reppliquer WAL logs\n    S->>S: Appliquer modifications\n    S-->>P: Replication OK\n    P-->>P: Confirmer commit client"
+  },
+  {
+    "prompt": "Séquence de connexion OAuth2 : Le client demande l'autorisation au serveur d'autorisation, qui valide après accord utilisateur.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor U as Utilisateur\n    participant C as ClientApp\n    participant AS as AuthServer\n    C->>AS: Demander code autorisation\n    AS->>U: Afficher page de consentement\n    U->>AS: Accepter autorisations\n    AS-->>C: Rediriger avec Code\n    C->>AS: Echanger Code contre Token\n    AS-->>C: Retourner AccessToken"
+  },
+  {
+    "prompt": "Séquence de chat websocket : L'expéditeur envoie le message. Le serveur le sauvegarde en base et le pousse au destinataire.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant E as Expediteur\n    participant WS as WebSocketServer\n    participant DB as BaseDonnées\n    participant D as Destinataire\n    E->>WS: SEND message(texte, destinataireId)\n    WS->>DB: Creer message en base\n    DB-->>WS: Message cree (id, date)\n    WS-->>E: CONFIRM message envoie\n    WS->>D: EMIT nouveauMessage(data)"
+  },
+  {
+    "prompt": "Séquence CI/CD : Le developpeur pousse le code. Git execute le pipeline. Docker cree l'image. Le serveur l'execute.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor D as Developpeur\n    participant Git as DepotGit\n    participant Pipeline as RunnerCI\n    participant Registry as RegDocker\n    participant Server as NodeProduction\n    D->>Git: Push commits\n    Git->>Pipeline: Webhook trigger build\n    Pipeline->>Pipeline: Executer tests unitaires\n    Pipeline->>Registry: Build & Push docker image\n    Registry-->>Pipeline: Image stockee\n    Pipeline->>Server: Run docker-compose pull && up\n    Server-->>Pipeline: Container demarre\n    Pipeline-->>D: Mail notification success"
+  },
+  {
+    "prompt": "Séquence de paiement par passerelle : Le serveur sollicite la passerelle de paiement. La passerelle interroge la banque.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant API as ServeurAPI\n    participant PG as PasserellePaiement\n    participant B as Banque\n    API->>PG: Creer transaction(montant, carte)\n    PG->>B: Demande d'autorisation de fonds\n    B-->>PG: Autorisation validee (code)\n    PG-->>API: Transaction OK (ref)"
+  },
+  {
+    "prompt": "Séquence de check-in hôtel : Le client se présente. Le réceptionniste cherche la fiche, prend le paiement, et crée la carte magnétique.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor C as Client\n    participant R as Receptionniste\n    participant S as Systemelogiciel\n    participant P as TerminalPaiement\n    C->>R: Demander check-in (nom)\n    R->>S: Rechercher reservation(nom)\n    S-->>R: Reservation trouvee (Chambre 302)\n    R->>P: Lancer transaction paiement\n    P-->>R: Paiement approuve\n    R->>S: Marquer chambre comme occupee\n    R-->>C: Remettre carte magnetique"
+  },
+  {
+    "prompt": "Séquence d'inscription universitaire : L'étudiant sélectionne ses cours. La scolarité vérifie la capacité et facture le solde.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor E as Etudiant\n    participant P as Portail\n    participant S as ServiceScolarite\n    participant F as ServiceFacturation\n    E->>P: Selectionner cours optionnels\n    P->>S: Valider choix cours(coursIds)\n    S-->>P: Places disponibles OK\n    P->>F: Calculer frais inscription\n    F-->>P: Facture: 350€\n    P-->>E: Afficher frais et payer"
+  },
+  {
+    "prompt": "Séquence de commande de VTC : Le passager demande un trajet. Le serveur cherche des chauffeurs et notifie le premier disponible.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor P as Passager\n    participant API as ServeurVTC\n    actor C as Chauffeur\n    P->>API: Demander course(origine, destination)\n    API->>API: Rechercher chauffeurs proches\n    API->>C: Offrir course (origine, tarif)\n    C->>API: Accepter course\n    API-->>P: Chauffeur en route (nom, plaque)"
+  },
+  {
+    "prompt": "Séquence de suivi de colis : L'utilisateur demande le statut. L'API interroge la base et renvoie l'historique des scans.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor U as Utilisateur\n    participant UI as ApplicationSuivi\n    participant API as ServeurAPI\n    participant DB as BaseDonnées\n    U->>UI: Saisir code suivi\n    UI->>API: GET /track(code)\n    API->>DB: Rechercher historique scans(code)\n    DB-->>API: Liste des evenements(depot, tri, transit)\n    API-->>UI: Formater historique\n    UI-->>U: Afficher chronologie"
+  },
+  {
+    "prompt": "Séquence de retrait DAB : Le client insère sa carte. Le DAB demande le code. Le code est vérifié par le système central.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor C as Client\n    participant DAB as Distributeur\n    participant Bank as BankCentral\n    C->>DAB: Inserer carte bancaire\n    DAB->>C: Demander code secret\n    C->>DAB: Saisir 4 chiffres\n    DAB->>Bank: Verifier code(carte, code)\n    Bank-->>DAB: Code correct\n    DAB-->>C: Afficher menu principal"
+  },
+  {
+    "prompt": "Séquence de prise de contrôle à distance : Le technicien se connecte au serveur d'aiguillage. Le serveur fait le pont vers le PC cible.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant T as TechSupport\n    participant B as BrokerConnexions\n    participant PC as PCCible\n    T->>B: Initier connexion session(sessionId)\n    B->>PC: Verifier disponibilite agent\n    PC-->>B: Agent en ligne et pret\n    B-->>T: Session etablie\n    T->>B: Envoyer commande clavier/souris\n    B->>PC: Executer action"
+  },
+  {
+    "prompt": "Séquence d'achat de ticket d'événement : Le client réserve. L'API bloque le siège temporairement et attend la confirmation du paiement.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor C as Client\n    participant API as ServeurBilletterie\n    participant DB as BaseDonnées\n    participant Pay as PasserellePaiement\n    C->>API: Choisir place(siegeId)\n    API->>DB: Mettre statut a 'Bloqué' pendant 10min\n    API->>Pay: Demander paiement(montant)\n    Pay-->>API: Paiement confirme\n    API->>DB: Mettre statut a 'Vendu' pour siegeId\n    API-->>C: Envoyer email avec e-ticket"
+  },
+  {
+    "prompt": "Séquence de résolution DNS : Le client demande l'IP. Le résolveur interroge le Root, le TLD, puis le serveur faisant autorité.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant C as NavigateurClient\n    participant R as ResolveurDNS\n    participant Root as RootNameServer\n    participant TLD as TLDServer\n    participant Auth as AuthNameServer\n    C->>R: Resoudre 'google.com'\n    R->>Root: Requete root pour '.com'\n    Root-->>R: Adresse IP de TLD '.com'\n    R->>TLD: Requete '.com' pour 'google.com'\n    TLD-->>R: Adresse IP de Auth 'google.com'\n    R->>Auth: Requete IP de 'www.google.com'\n    Auth-->>R: 142.250.190.46\n    R-->>C: 142.250.190.46"
+  },
+  {
+    "prompt": "Séquence de consultation de cache : L'application vérifie le cache Redis avant d'interroger la base SQL principale.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant App as ServeurApp\n    participant Cache as RedisCache\n    participant DB as PostgreSQL\n    App->>Cache: GET key(userId)\n    alt Cache Hit\n        Cache-->>App: Donnees utilisateur (JSON)\n    else Cache Miss\n        Cache-->>App: Null\n        App->>DB: SELECT * FROM users WHERE id=userId\n        DB-->>App: Donnees brutes\n        App->>Cache: SET key(userId, data, EX=3600)\n    end"
+  },
+  {
+    "prompt": "Séquence de signature électronique : L'utilisateur envoie le document. La plateforme le prépare, alerte le signataire par mail, et enregistre la signature.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor U as Emetteur\n    participant P as PlateformeSignature\n    actor S as Signataire\n    participant M as Mailer\n    U->>P: Uploader document.pdf et email signataire\n    P->>P: Generer token signature\n    P->>M: Envoyer email invitation signature\n    M-->>S: Email reçu avec lien unique\n    S->>P: Ouvrir document et appliquer signature\n    P->>P: Sceller cryptographiquement le PDF\n    P-->>S: Telecharger copie signee\n    P-->>U: Notification signature document finalisee"
+  },
+  {
+    "prompt": "Séquence d'inscription newsletter : L'abonné soumet l'email. L'API vérifie le format, l'ajoute en base et envoie le mail de confirmation.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor A as Abonne\n    participant F as FormulaireWeb\n    participant API as ServeurAPI\n    participant DB as BaseDonnées\n    participant M as Mailer\n    A->>F: Entrer email et valider\n    F->>API: POST /newsletter/subscribe(email)\n    API->>API: Valider format email\n    API->>DB: Ajouter abonnement(email, actif=false)\n    API->>M: Envoyer confirmation double opt-in\n    M-->>A: Mail de confirmation recu\n    A->>API: Cliquer lien opt-in\n    API->>DB: Activer abonnement(email, actif=true)\n    API-->>A: Affichage page de remerciement"
+  },
+  {
+    "prompt": "Séquence de routage API Gateway : Le client envoie une requête. Le gateway valide le token JWT et la redirige vers le microservice concerné.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant C as ClientApp\n    participant GW as ApiGateway\n    participant Auth as AuthService\n    participant MS as MicroserviceProduits\n    C->>GW: GET /produits/12 (Header: Authorization)\n    GW->>Auth: Verifier token JWT(token)\n    Auth-->>GW: Token valide (userId, role=USER)\n    GW->>MS: GET /internal/produits/12\n    MS-->>GW: Donnes produit JSON\n    GW-->>C: 200 OK (Donnees produit)"
+  },
+  {
+    "prompt": "Séquence de sauvegarde automatisée : Le planificateur lance le script. Le script dump la base et transfère le fichier sur un stockage Cloud.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant S as PlanificateurCron\n    participant Script as ScriptSauvegarde\n    participant DB as PostgreSQL\n    participant Storage as CloudStorage\n    S->>Script: Declencher backup journalier\n    Script->>DB: Executer pg_dump\n    DB-->>Script: Fichier backup.sql.gz genere\n    Script->>Storage: Uploader backup.sql.gz\n    Storage-->>Script: Upload reussi (200 OK)\n    Script->>Script: Supprimer fichier local temporaire"
+  },
+  {
+    "prompt": "Séquence d'upload de fichier S3 : Le client demande une URL signée à l'API, puis uploade le fichier directement sur Amazon S3.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor C as Client\n    participant API as ServeurAPI\n    participant S3 as AmazonS3\n    C->>API: POST /uploads/presigned-url(fileName)\n    API->>API: Generer cle unique de stockage\n    API->>S3: Demander URL pre-signee pour ecriture\n    S3-->>API: URL signee valable 5min\n    API-->>C: URL pre-signee retournee\n    C->>S3: PUT /file-object (Contenu du fichier)\n    S3-->>C: 200 OK (Upload reussi)"
+  },
+  {
+    "prompt": "Séquence de diffusion vidéo (CDN) : Le lecteur demande le flux. Le CDN sert les fichiers mis en cache ou interroge le serveur d'origine.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor V as Spectateur\n    participant Player as LecteurVideo\n    participant CDN as ServeurCDN\n    participant Origin as ServeurOrigine\n    V->>Player: Cliquer Play\n    Player->>CDN: Demander segment 001.ts\n    alt Segment en cache\n        CDN-->>Player: Retourner 001.ts\n    else Segment non en cache\n        CDN->>Origin: Recuperer segment 001.ts\n        Origin-->>CDN: Fichier 001.ts\n        CDN->>CDN: Mettre en cache\n        CDN-->>Player: Retourner 001.ts\n    end\n    Player-->>V: Diffuser video"
+  },
+  {
+    "prompt": "Séquence d'activation de double facteur (MFA) : L'utilisateur demande l'activation. Le système fournit un secret QR code que l'utilisateur scanne dans son appli.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor U as Utilisateur\n    participant S as ServeurApp\n    participant App as AppAuthentificateur\n    U->>S: Activer MFA dans les parametres\n    S->>S: Generer cle secrete unique\n    S-->>U: Afficher QR Code contenant le secret\n    U->>App: Scanner le QR Code\n    App->>App: Sauvegarder cle secrete locale\n    App-->>U: Generer code OTP temporaire (6 chiffres)\n    U->>S: Saisir le code OTP pour confirmation\n    S->>S: Verifier code avec cle secrete\n    S-->>U: MFA active avec succes"
+  },
+  {
+    "prompt": "Séquence de diagnostic auto : Le mécanicien branche la valise sur le véhicule. La valise interroge l'ordinateur de bord et extrait les codes d'erreur.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor M as Mecanicien\n    participant V as ValiseDiagnostic\n    participant ECU as CalculateurMoteur\n    M->>V: Lancer scan de controle\n    V->>ECU: Requete de lecture codes DTC\n    ECU->>ECU: Lire memoire des pannes\n    ECU-->>V: Retourner codes (ex: P0301, P0102)\n    V->>V: Traduire codes en descriptions textuelles\n    V-->>M: Afficher rapports d'anomalies sur l'ecran"
+  },
+  {
+    "prompt": "Séquence de passage d'ordre de bourse : L'investisseur passe un ordre d'achat. Le courtier vérifie la couverture puis transmet à la bourse.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    actor I as Investisseur\n    participant C as Courtier\n    participant E as BourseDeValeurs\n    I->>C: Passer ordre achat(action, quantite, limite)\n    C->>C: Verifier liquidites disponibles sur le compte\n    alt Liquidites OK\n        C->>E: Envoyer ordre achat\n        E->>E: Matcher avec ordre de vente\n        E-->>C: Ordre execute (prix)\n        C->>C: Mettre a jour portefeuille client\n        C-->>I: Confirmation execution de l'ordre\n    else Liquidites insuffisantes\n        C-->>I: Echec : Solde insuffisant pour l'ordre\n    end"
+  },
+  {
+    "prompt": "Séquence de webhook Stripe : Stripe envoie l'événement de paiement réussi au serveur backend. Le backend met à jour le statut en base.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant Stripe as ServeurStripe\n    participant GW as ApiGateway\n    participant Back as BackendApp\n    participant DB as BaseDonnées\n    Stripe->>GW: POST /webhooks/stripe (Event: payment_intent.succeeded)\n    GW->>Back: Transmettre payload brut\n    Back->>Back: Valider signature de webhook (Stripe Signature)\n    alt Signature valide\n        Back->>DB: Mettre a jour commande a 'Payée'\n        DB-->>Back: OK\n        Back-->>Stripe: 200 OK (Webhook traite)\n    else Signature invalide\n        Back-->>Stripe: 400 Bad Request (Echec de validation)\n    end"
+  },
+  {
+    "prompt": "Séquence d'auto-scaling cloud : Le module de monitoring détecte une charge CPU élevée. Il demande au fournisseur cloud de démarrer une nouvelle VM.",
+    "type": "SEQUENCE",
+    "mermaid": "sequenceDiagram\n    participant M as MonitorCPU\n    participant AS as AutoScaler\n    participant Cloud as CloudAPI\n    participant LB as LoadBalancer\n    M->>AS: Alerte CPU > 85% pendant 3 minutes\n    AS->>Cloud: POST /instances (Creer nouvelle machine)\n    Cloud->>Cloud: Provisionner nouvelle VM\n    Cloud-->>AS: VM prete et demarree (IP: 10.0.0.45)\n    AS->>LB: Ajouter target instance (10.0.0.45)\n    LB-->>AS: Target enregistree et saine"
+  },
+  {
+    "prompt": "Cycle de vie d'un bug : Un bug est signalé. Il passe à En cours. Le développeur résout, le testeur valide. Si échec, retour à En cours. Si succès, fermé.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> Signale\n    Signale --> EnCours : Assigner\n    EnCours --> Resolu : Corriger\n    Resolu --> Validation : Tester\n    state Validation <<choice>>\n    Validation --> EnCours : Echec validation\n    Validation --> Valide : Succes validation\n    Valide --> Ferme\n    Ferme --> [*]"
+  },
+  {
+    "prompt": "Cycle de commande e-commerce : Commande créée. En attente de paiement. Si payé, préparé puis expédié. Si échec paiement, annulé.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> CommandeCreee\n    CommandeCreee --> AttentePaiement\n    state AttentePaiement <<choice>>\n    AttentePaiement --> Preparation : Paiement OK\n    AttentePaiement --> Annulee : Echec / Delai depasse\n    Preparation --> Expediee\n    Expediee --> Livree\n    Livree --> [*]\n    Annulee --> [*]"
+  },
+  {
+    "prompt": "Workflow de révision de document : Le document est rédigé. Il passe en cours de révision. Le réviseur approuve ou rejette (retour rédaction). Si approuvé, il est publié.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> Redaction\n    Redaction --> Revision\n    state Revision <<choice>>\n    Revision --> Redaction : Rejete (corrections)\n    Revision --> Approuve : Valide\n    Approuve --> Publie\n    Publie --> [*]"
+  },
+  {
+    "prompt": "Workflow d'annulation de commande : Demande reçue. Le système vérifie si elle est déjà expédiée. Si oui, refusée. Si non, remboursement et annulation.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> DemandeRecue\n    DemandeRecue --> VerifierExpedition\n    state VerifierExpedition <<choice>>\n    VerifierExpedition --> AnnulationRefusee : Deja expediee\n    VerifierExpedition --> Rembourser : Non expediee\n    Rembourser --> CommandeAnnulee\n    AnnulationRefusee --> [*]\n    CommandeAnnulee --> [*]"
+  },
+  {
+    "prompt": "Processus de demande de congés : Soumission de la demande. Le responsable vérifie. Si refusé, notifié. Si validé, les RH mettent à jour les soldes.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> SoumettreDemande\n    SoumettreDemande --> DecisionResponsable\n    state DecisionResponsable <<choice>>\n    DecisionResponsable --> NotificationRefus : Demande refusee\n    DecisionResponsable --> ValidationRH : Demande validee\n    NotificationRefus --> [*]\n    ValidationRH --> MiseAJourSoldes\n    MiseAJourSoldes --> [*]"
+  },
+  {
+    "prompt": "Processus d'inscription à l'université : Dépôt du dossier. Examen par la commission. Si refusé, fin. Si accepté, paiement des frais d'inscription puis confirmation.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> DepotDossier\n    DepotDossier --> ExamenCommission\n    state ExamenCommission <<choice>>\n    ExamenCommission --> Rejete : Non admissible\n    ExamenCommission --> PaiementFrais : Admissible\n    Rejete --> [*]\n    PaiementFrais --> Confirme\n    Confirme --> [*]"
+  },
+  {
+    "prompt": "Processus d'interview candidat : Entretien RH. Si positif, entretien technique. Si positif, entretien manager. Si positif, proposition d'embauche.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> EntretienRH\n    EntretienRH --> DecisionRH\n    state DecisionRH <<choice>>\n    DecisionRH --> CandidatRefuse : Negatif\n    DecisionRH --> EntretienTechnique : Positif\n    EntretienTechnique --> DecisionTech\n    state DecisionTech <<choice>>\n    DecisionTech --> CandidatRefuse : Negatif\n    DecisionTech --> EntretienManager : Positif\n    EntretienManager --> DecisionManager\n    state DecisionManager <<choice>>\n    DecisionManager --> CandidatRefuse : Negatif\n    DecisionManager --> OffreEmploi : Positif\n    CandidatRefuse --> [*]\n    OffreEmploi --> [*]"
+  },
+  {
+    "prompt": "Processus de livraison de colis : Colis emballé. Expédié au centre régional. Livreur prend en charge. Si client présent, livré. Si absent, avis de passage déposé.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> EmballageColis\n    EmballageColis --> ExpeditionCentre\n    ExpeditionCentre --> PriseEnChargeLivreur\n    PriseEnChargeLivreur --> TentativeLivraison\n    state TentativeLivraison <<choice>>\n    TentativeLivraison --> Livree : Present\n    TentativeLivraison --> AvisDepose : Absent\n    AvisDepose --> [*]\n    Livree --> [*]"
+  },
+  {
+    "prompt": "Processus d'examen en ligne : Authentification de l'étudiant. Lancement de l'épreuve. Remplissage des questions. Soumission. Calcul automatique du score.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> Authentification\n    Authentification --> DemarrageEpreuve\n    DemarrageEpreuve --> RepondreQuestions\n    RepondreQuestions --> SoumissionCopie\n    SoumissionCopie --> CalculScore\n    CalculScore --> [*]"
+  },
+  {
+    "prompt": "Processus de retour d'article : Client renvoie l'article. Inspection de l'état. Si état correct, remboursement. Si endommagé, remboursement partiel ou refus.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> ReceptionArticle\n    ReceptionArticle --> InspectionEtat\n    state InspectionEtat <<choice>>\n    InspectionEtat --> RemboursementTotal : Etat neuf\n    InspectionEtat --> RemboursementPartiel : Etat endommage\n    InspectionEtat --> RetourRefuse : Inutilisable\n    RemboursementTotal --> [*]\n    RemboursementPartiel --> [*]\n    RetourRefuse --> [*]"
+  },
+  {
+    "prompt": "Processus Git PR : Création branche. Commit de modifications. Ouverture PR. Si tests échoués, modifier. Si approuvé par pairs, fusionné dans main.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> CreationBranche\n    CreationBranche --> Commits\n    Commits --> OuverturePR\n    OuverturePR --> VerificationTests\n    state VerificationTests <<choice>>\n    VerificationTests --> Commits : Tests ❌\n    VerificationTests --> RevueCode : Tests ✅\n    RevueCode --> DecisionRevue\n    state DecisionRevue <<choice>>\n    DecisionRevue --> Commits : Changements requis\n    DecisionRevue --> Fusion : Approuvee\n    Fusion --> [*]"
+  },
+  {
+    "prompt": "Processus de location de vélo : Scan du QR code. Vérification du solde. Si suffisant, déverrouillage. Utilisation. Dépôt dans une station et verrouillage.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> ScanQRCode\n    ScanQRCode --> VerifierSolde\n    state VerifierSolde <<choice>>\n    VerifierSolde --> SoldeInsuffisant : Solde < 2€\n    VerifierSolde --> Deverrouiller : Solde OK\n    SoldeInsuffisant --> [*]\n    Deverrouiller --> TrajetEnCours\n    TrajetEnCours --> RestitutionStation\n    RestitutionStation --> VerrouillageVelo\n    VerrouillageVelo --> [*]"
+  },
+  {
+    "prompt": "Processus d'inscription à une newsletter : Remplissage email. Envoi lien confirmation par email. Clic utilisateur sur lien. Email marqué vérifié.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> SaisieEmail\n    SaisieEmail --> EnvoiLienVerification\n    EnvoiLienVerification --> AttenteClicLien\n    AttenteClicLien --> ClicLien\n    ClicLien --> ActivationAbonnement\n    ActivationAbonnement --> [*]"
+  },
+  {
+    "prompt": "Processus de demande de prêt bancaire : Soumission demande. Analyse du score de crédit. Si score insuffisant, refus. Si suffisant, demande de justificatifs puis virement des fonds.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> SoumettreDemande\n    SoumettreDemande --> AnalyseCreditScore\n    state AnalyseCreditScore <<choice>>\n    AnalyseCreditScore --> PretRefuse : Credit faible\n    AnalyseCreditScore --> DemanderJustificatifs : Credit bon\n    PretRefuse --> [*]\n    DemanderJustificatifs --> VerifierDocuments\n    VerifierDocuments --> VerserFonds\n    VerserFonds --> [*]"
+  },
+  {
+    "prompt": "Processus de support client : Ticket ouvert. Le technicien analyse. Si resolu, cloturé. Sinon, escalade au niveau supérieur.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> OuvertureTicket\n    OuvertureTicket --> AnalyseTechnicien\n    state AnalyseTechnicien <<choice>>\n    AnalyseTechnicien --> TicketResolu : Solution trouvee\n    AnalyseTechnicien --> EscaladeN2 : Complexe\n    TicketResolu --> ClotureTicket\n    EscaladeN2 --> AnalyseExpert\n    AnalyseExpert --> ClotureTicket\n    ClotureTicket --> [*]"
+  },
+  {
+    "prompt": "Processus de publication d'article : Rédaction brouillon. Relecture SEO. Si non validé, modifier. Si validé, planifier publication et publier.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> RedactionBrouillon\n    RedactionBrouillon --> RelectureSEO\n    state RelectureSEO <<choice>>\n    RelectureSEO --> RedactionBrouillon : A ameliorer\n    RelectureSEO --> Planification : Valide\n    Planification --> Publication\n    Publication --> [*]"
+  },
+  {
+    "prompt": "Processus d'inscription utilisateur : Formulaire rempli. Validation champs. Si erreurs, réafficher. Si ok, mot de passe hashé et utilisateur inséré en DB.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> FormulaireSaisi\n    FormulaireSaisi --> ValidationChamps\n    state ValidationChamps <<choice>>\n    ValidationChamps --> FormulaireSaisi : Champs invalides\n    ValidationChamps --> HasherMDP : OK\n    HasherMDP --> InsertionDatabase\n    InsertionDatabase --> EnvoiEmailBienvenue\n    EnvoiEmailBienvenue --> [*]"
+  },
+  {
+    "prompt": "Processus check-out hôtel : Demande facture. Le réceptionniste vérifie les consommations bar. Le client paie et rend les clés.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> DemanderFacture\n    DemanderFacture --> VerificationConsommations\n    VerificationConsommations --> Facturation\n    Facturation --> PaiementClient\n    PaiementClient --> RestitutionClefs\n    RestitutionClefs --> [*]"
+  },
+  {
+    "prompt": "Processus de planification voyage : Recherche vols et hôtels. Sélection options. Si hors budget, modifier. Si dans le budget, réserver et payer.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> RechercherOptions\n    RechercherOptions --> SelectionnerVoyage\n    state SelectionnerVoyage <<choice>>\n    SelectionnerVoyage --> RechercherOptions : Hors budget\n    SelectionnerVoyage --> ReserverPayer : Dans le budget\n    ReserverPayer --> GenererItineraire\n    GenererItineraire --> [*]"
+  },
+  {
+    "prompt": "Processus planification de cours : Le professeur propose un créneau. Le système vérifie si la salle est libre. Si oui, réservé. Sinon, proposer une autre salle.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> PropositionCreneau\n    PropositionCreneau --> VerifierDispoSalle\n    state VerifierDispoSalle <<choice>>\n    VerifierDispoSalle --> TrouverAutreSalle : Salle occupee\n    VerifierDispoSalle --> ConfirmerReservation : Salle libre\n    TrouverAutreSalle --> ConfirmerReservation\n    ConfirmerReservation --> NotificationEtudiants\n    NotificationEtudiants --> [*]"
+  },
+  {
+    "prompt": "Processus de suppression de compte : Utilisateur demande la suppression. Délai de grâce de 30 jours. Si connexion durant le délai, restauré. Sinon, suppression définitive.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> DemandeSuppression\n    DemandeSuppression --> DesactivationTemporaire\n    DesactivationTemporaire --> DelaiDeGrace\n    state DelaiDeGrace <<choice>>\n    DelaiDeGrace --> RestaurationCompte : Connexion utilisateur\n    DelaiDeGrace --> SuppressionPhysique : Fin des 30 jours\n    RestaurationCompte --> [*]\n    SuppressionPhysique --> [*]"
+  },
+  {
+    "prompt": "Processus de mise à jour firmware IoT : Le serveur publie le fichier. L'appareil télécharge. Si signature invalide, rejeter. Si valide, flasher la mémoire et redémarrer.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> NotificationMiseAJour\n    NotificationMiseAJour --> TelechargementFirmware\n    TelechargementFirmware --> VerificationSignature\n    state VerificationSignature <<choice>>\n    VerificationSignature --> ErreurSignature : Invalide\n    VerificationSignature --> EcritureFlash : Valide\n    ErreurSignature --> [*]\n    EcritureFlash --> RedemarrageAppareil\n    RedemarrageAppareil --> [*]"
+  },
+  {
+    "prompt": "Processus de commande en cuisine : Commande reçue. Le cuisinier prépare l'entrée. Une fois prête, il prépare le plat principal. Enfin, dressage et envoi en salle.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> CommandeRecue\n    CommandeRecue --> PreparerEntree\n    PreparerEntree --> PreparerPlatPrincipal\n    PreparerPlatPrincipal --> DressageAssiette\n    DressageAssiette --> EnvoiEnSalle\n    EnvoiEnSalle --> [*]"
+  },
+  {
+    "prompt": "Processus de modération de forum : Un message est signalé. Le modérateur vérifie. Si conforme, rejet du signalement. Si non conforme, suppression et avertissement à l'auteur.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> MessageSignale\n    MessageSignale --> AnalyseMessage\n    state AnalyseMessage <<choice>>\n    AnalyseMessage --> RejetSignalement : Conforme aux regles\n    AnalyseMessage --> SupprimerMessage : Non conforme\n    RejetSignalement --> [*]\n    SupprimerMessage --> AvertirAuteur\n    AvertirAuteur --> [*]"
+  },
+  {
+    "prompt": "Processus d'abonnement SaaS : Sélection formule. Remplissage coordonnées bancaires. Paiement de la première mensualité. Activation immédiate des accès.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> SelectionFormule\n    SelectionFormule --> SaisieInfosBancaires\n    SaisieInfosBancaires --> TentativeDebit\n    state TentativeDebit <<choice>>\n    TentativeDebit --> SaisieInfosBancaires : Echec paiement\n    TentativeDebit --> ActiverLicence : Succes\n    ActiverLicence --> [*]"
+  },
+  {
+    "prompt": "Processus de remboursement de frais : L'employé scanne sa note de frais. Validation par le manager. Si rejeté, fin. Si validé, paiement par virement.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> SoumettreNoteFrais\n    SoumettreNoteFrais --> ValidationManager\n    state ValidationManager <<choice>>\n    ValidationManager --> Rejete : Note non conforme\n    ValidationManager --> VirementComptabilite : Approuve\n    Rejete --> [*]\n    VirementComptabilite --> [*]"
+  },
+  {
+    "prompt": "Processus de réservation de parking : L'usager cherche un parking. Si complet, rediriger. Si libre, paiement et attribution d'un code d'accès.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> RechercheParking\n    RechercheParking --> VerifierPlaces\n    state VerifierPlaces <<choice>>\n    VerifierPlaces --> ParkingComplet : 0 place\n    VerifierPlaces --> ProcederPaiement : places dispos\n    ParkingComplet --> [*]\n    ProcederPaiement --> GenererCodeAcces\n    GenererCodeAcces --> [*]"
+  },
+  {
+    "prompt": "Processus de sauvegarde de fichiers : Scan des modifications. S'il n'y a rien, fin. S'il y a des changements, compression des fichiers et envoi sur le serveur distant.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> ScanModifications\n    ScanModifications --> ChangementsTrouves\n    state ChangementsTrouves <<choice>>\n    ChangementsTrouves --> Terminer : Non\n    ChangementsTrouves --> CompresserFichiers : Oui\n    CompresserFichiers --> TransfertFTP\n    TransfertFTP --> Terminer\n    Terminer --> [*]"
+  },
+  {
+    "prompt": "Processus d'emprunt bibliothèque : Présentation carte adhérent. Scan du livre. Vérification de la situation (pas de retard). Si situation saine, prêt enregistré.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> IdentificationAdherent\n    IdentificationAdherent --> VerificationStatut\n    state VerificationStatut <<choice>>\n    VerificationStatut --> EmpruntsBloques : Adherent en retard ou suspendu\n    VerificationStatut --> ScanLivre : Situation saine\n    EmpruntsBloques --> [*]\n    ScanLivre --> EnregistrerPret\n    EnregistrerPret --> [*]"
+  },
+  {
+    "prompt": "Processus de recyclage : Tri des déchets par l'usager. Collecte par le camion. acheminement au centre de tri. Traitement par matière.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> TriUsager\n    TriUsager --> CollecteCamion\n    CollecteCamion --> CentreDeTri\n    CentreDeTri --> TraitementMatiere\n    TraitementMatiere --> [*]"
+  },
+  {
+    "prompt": "Processus de demande de devis : Le client remplit le besoin. Le commercial évalue le travail et envoie le devis sous 48h.",
+    "type": "ACTIVITY",
+    "mermaid": "stateDiagram-v2\n    [*] --> FormulerDemande\n    FormulerDemande --> EvaluationTechnique\n    EvaluationTechnique --> RedigerDevis\n    RedigerDevis --> EnvoiClient\n    EnvoiClient --> [*]"
+  },
+  {
+    "prompt": "Diagramme ER pour la gestion d'un club de fitness : Un Membre a un Abonnement. Un Cours est animé par un Entraineur. Les Membres s'inscrivent aux Cours.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    MEMBRE {\n        string id PK\n        string nom\n        string email\n    }\n    ABONNEMENT {\n        string id PK\n        string type\n        float tarif\n    }\n    ENTRAINEUR {\n        string id PK\n        string nom\n        string specialite\n    }\n    COURS {\n        string id PK\n        string nom\n        date horaire\n    }\n    MEMBRE ||--|| ABONNEMENT : souscrit\n    ENTRAINEUR ||--o{ COURS : anime\n    MEMBRE }o--o{ COURS : inscrit"
+  },
+  {
+    "prompt": "Diagramme ER pour une clinique vétérinaire : Un Propriétaire possède des Animaux. Un Vétérinaire effectue des Consultations pour des Animaux.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    PROPRIETAIRE {\n        string id PK\n        string nom\n        string telephone\n    }\n    ANIMAL {\n        string id PK\n        string nom\n        string espece\n    }\n    VETERINAIRE {\n        string id PK\n        string nom\n        string specialite\n    }\n    CONSULTATION {\n        string id PK\n        date dateConsultation\n        text diagnostic\n    }\n    PROPRIETAIRE ||--o{ ANIMAL : possede\n    VETERINAIRE ||--o{ CONSULTATION : effectue\n    ANIMAL ||--o{ CONSULTATION : recoit"
+  },
+  {
+    "prompt": "Diagramme ER pour une flotte IoT : Un Véhicule possède des Modules. Un Module enregistre des Télémétries (température, humidité).",
+    "type": "ER",
+    "mermaid": "erDiagram\n    VEHICULE {\n        string id PK\n        string immatriculation\n        string marque\n    }\n    MODULE {\n        string id PK\n        string codeSerie\n        string firmwareVersion\n    }\n    TELEMETRIE {\n        string id PK\n        float latitude\n        float longitude\n        float temperature\n        date dateHeure\n    }\n    VEHICULE ||--o{ MODULE : equipe\n    MODULE ||--o{ TELEMETRIE : enregistre"
+  },
+  {
+    "prompt": "Diagramme ER pour le recrutement : Un Candidat postule à des Offres. Une Offre est associée à une Entreprise et génère des Entretiens.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CANDIDAT {\n        string id PK\n        string nom\n        string cvUrl\n    }\n    ENTREPRISE {\n        string id PK\n        string nom\n        string secteur\n    }\n    OFFRE {\n        string id PK\n        string titre\n        float salaire\n    }\n    ENTRETIEN {\n        string id PK\n        date dateHeure\n        string type\n    }\n    ENTREPRISE ||--o{ OFFRE : propose\n    CANDIDAT ||--o{ ENTRETIEN : passe\n    OFFRE ||--o{ ENTRETIEN : necessite"
+  },
+  {
+    "prompt": "Diagramme ER pour une pizzeria : Un Client passe des Commandes. Une Commande contient des Pizzas. Les Pizzas utilisent des Ingrédients.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CLIENT {\n        string id PK\n        string nom\n        string telephone\n    }\n    COMMANDE {\n        string id PK\n        date dateHeure\n        float total\n    }\n    PIZZA {\n        string id PK\n        string nom\n        float prix\n    }\n    INGREDIENT {\n        string id PK\n        string nom\n        int stock\n    }\n    CLIENT ||--o{ COMMANDE : passe\n    COMMANDE }o--|{ PIZZA : contient\n    PIZZA }o--|{ INGREDIENT : necessite"
+  },
+  {
+    "prompt": "Diagramme ER d'assurance : Un Client souscrit à des Contrats. Un Contrat couvre des Garanties. Le Client peut déclarer des Sinistres.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CLIENT {\n        string id PK\n        string nom\n        string nif\n    }\n    CONTRAT {\n        string id PK\n        string numero\n        date dateDebut\n    }\n    GARANTIE {\n        string id PK\n        string type\n        float plafond\n    }\n    SINISTRE {\n        string id PK\n        date dateOccurence\n        string statut\n    }\n    CLIENT ||--o{ CONTRAT : souscrit\n    CLIENT ||--o{ SINISTRE : declare\n    CONTRAT }o--|{ GARANTIE : comprend\n    CONTRAT ||--o{ SINISTRE : couvre"
+  },
+  {
+    "prompt": "Diagramme ER pour un système de cinéma : Un Cinéma possède des Salles. Chaque salle accueille des Séances. Une Séance diffuse un Film.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CINEMA {\n        string id PK\n        string nom\n        string adresse\n    }\n    SALLE {\n        string id PK\n        int numero\n        int capacite\n    }\n    FILM {\n        string id PK\n        string titre\n        int duree\n    }\n    SEANCE {\n        string id PK\n        date horaire\n        float tarif\n    }\n    CINEMA ||--o{ SALLE : possede\n    SALLE ||--o{ SEANCE : accueille\n    FILM ||--o{ SEANCE : programme"
+  },
+  {
+    "prompt": "Diagramme ER pour un musée : Un Musée organise des Expositions. Une Exposition présente des Œuvres d'Art créées par des Artistes.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    MUSEE {\n        string id PK\n        string nom\n        string ville\n    }\n    EXPOSITION {\n        string id PK\n        string titre\n        date debut\n        date fin\n    }\n    OEUVRE {\n        string id PK\n        string titre\n        int annee\n    }\n    ARTISTE {\n        string id PK\n        string nom\n        string nationalite\n    }\n    MUSEE ||--o{ EXPOSITION : organise\n    EXPOSITION }o--|{ OEUVRE : présente\n    ARTISTE ||--o{ OEUVRE : cree"
+  },
+  {
+    "prompt": "Diagramme ER pour un parking automatique : Un Parking contient des Zones. Chaque zone possède des Places. Chaque place a un Capteur associé.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    PARKING {\n        string id PK\n        string nom\n    }\n    ZONE {\n        string id PK\n        string code\n    }\n    PLACE {\n        string id PK\n        int numero\n        boolean occupee\n    }\n    CAPTEUR {\n        string id PK\n        string codeSerie\n        boolean statut\n    }\n    PARKING ||--o{ ZONE : contient\n    ZONE ||--o{ PLACE : contient\n    PLACE ||--|| CAPTEUR : surveille"
+  },
+  {
+    "prompt": "Diagramme ER pour un port de plaisance : Un Port loue des Emplacements à des Bateaux appartenant à des Propriétaires.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    PORT {\n        string id PK\n        string nom\n    }\n    EMPLACEMENT {\n        string id PK\n        string code\n        float longueurMax\n    }\n    BATEAU {\n        string id PK\n        string nom\n        float longueur\n    }\n    PROPRIETAIRE {\n        string id PK\n        string nom\n        string telephone\n    }\n    PORT ||--o{ EMPLACEMENT : possede\n    PROPRIETAIRE ||--o{ BATEAU : possede\n    EMPLACEMENT ||--o| BATEAU : loue"
+  },
+  {
+    "prompt": "Diagramme ER pour le covoiturage : Un Conducteur propose des Trajets. Des Passagers réservent des places sur ces Trajets via des Réservations.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CONDUCTEUR {\n        string id PK\n        string nom\n        string permis\n    }\n    TRAJET {\n        string id PK\n        string depart\n        string destination\n        date departHeure\n    }\n    PASSAGER {\n        string id PK\n        string nom\n        string telephone\n    }\n    RESERVATION {\n        string id PK\n        int nbPlaces\n        string statut\n    }\n    CONDUCTEUR ||--o{ TRAJET : propose\n    TRAJET ||--o{ RESERVATION : enregistre\n    PASSAGER ||--o{ RESERVATION : effectue"
+  },
+  {
+    "prompt": "Diagramme ER pour l'irrigation connectée : Un Contrôleur pilote des Vannes. Les données d'humidité sont lues par des Capteurs d'humidité.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CONTROLEUR {\n        string id PK\n        string adresseIP\n    }\n    VANNE {\n        string id PK\n        int canal\n        boolean ouverte\n    }\n    CAPTEUR {\n        string id PK\n        string codeSerie\n        float tauxHumidite\n    }\n    CONTROLEUR ||--o{ VANNE : pilote\n    CONTROLEUR ||--o{ CAPTEUR : lit"
+  },
+  {
+    "prompt": "Diagramme ER pour un système RH : Un Employé appartient à un Département. Un Employé occupe un Poste et travaille sur des Projets.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    EMPLOYE {\n        string id PK\n        string nom\n        string email\n    }\n    DEPARTEMENT {\n        string id PK\n        string nom\n        string localisation\n    }\n    POSTE {\n        string id PK\n        string titre\n        float salaireMin\n    }\n    PROJET {\n        string id PK\n        string nom\n        date echeance\n    }\n    DEPARTEMENT ||--o{ EMPLOYE : emploie\n    POSTE ||--o{ EMPLOYE : attribue\n    EMPLOYE }o--o{ PROJET : affecte"
+  },
+  {
+    "prompt": "Diagramme ER de catalogue de films : Un Film appartient à un Genre. Un Acteur joue dans des Films. Un Film est réalisé par un Réalisateur.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    FILM {\n        string id PK\n        string titre\n        int anneeSortie\n    }\n    GENRE {\n        string id PK\n        string libelle\n    }\n    ACTEUR {\n        string id PK\n        string nom\n        string nationalite\n    }\n    REALISATEUR {\n        string id PK\n        string nom\n    }\n    GENRE ||--o{ FILM : classifie\n    REALISATEUR ||--o{ FILM : realise\n    ACTEUR }o--o{ FILM : joue"
+  },
+  {
+    "prompt": "Diagramme ER pour la billetterie d'événements : Un Événement a lieu dans une Salle (Venue). Les Clients achètent des Tickets pour un Événement.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    EVENEMENT {\n        string id PK\n        string nom\n        date dateEvenement\n    }\n    VENUE {\n        string id PK\n        string nom\n        string adresse\n    }\n    TICKET {\n        string id PK\n        string codeUnique\n        float prix\n    }\n    CLIENT {\n        string id PK\n        string nom\n        string email\n    }\n    VENUE ||--o{ EVENEMENT : accueille\n    EVENEMENT ||--o{ TICKET : propose\n    CLIENT ||--o{ TICKET : achete"
+  },
+  {
+    "prompt": "Diagramme ER de réparations auto : Un Client possède une Voiture. Un Mécanicien effectue des Réparations qui consomment des Pièces détachées.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CLIENT {\n        string id PK\n        string nom\n    }\n    VOITURE {\n        string id PK\n        string immatriculation\n    }\n    MECANICIEN {\n        string id PK\n        string nom\n    }\n    REPARATION {\n        string id PK\n        date dateReparation\n        text description\n    }\n    PIECE {\n        string id PK\n        string nom\n        float prix\n    }\n    CLIENT ||--o{ VOITURE : possede\n    VOITURE ||--o{ REPARATION : subit\n    MECANICIEN ||--o{ REPARATION : effectue\n    REPARATION }o--o{ PIECE : utilise"
+  },
+  {
+    "prompt": "Diagramme ER de système d'enchères : Un Utilisateur met en vente des Articles. D'autres Utilisateurs soumettent des Offres d'achat.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    UTILISATEUR {\n        string id PK\n        string pseudo\n        string email\n    }\n    ARTICLE {\n        string id PK\n        string titre\n        float prixDepart\n        date dateFin\n    }\n    OFFRE {\n        string id PK\n        float montant\n        date dateHeure\n    }\n    UTILISATEUR ||--o{ ARTICLE : vend\n    ARTICLE ||--o{ OFFRE : reçoit\n    UTILISATEUR ||--o{ OFFRE : soumet"
+  },
+  {
+    "prompt": "Diagramme ER pour la gestion d'école : Un Étudiant appartient à une Classe. Une Classe suit des Cours. Un Enseignant est affecté à des Cours.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    ETUDIANT {\n        string id PK\n        string nom\n        string matricule\n    }\n    CLASSE {\n        string id PK\n        string code\n    }\n    COURS {\n        string id PK\n        string nom\n        int volumeHoraire\n    }\n    ENSEIGNANT {\n        string id PK\n        string nom\n    }\n    CLASSE ||--o{ ETUDIANT : contient\n    CLASSE }o--o{ COURS : suit\n    ENSEIGNANT ||--o{ COURS : enseigne"
+  },
+  {
+    "prompt": "Diagramme ER de projet de développement : Un Projet contient des Tâches. Chaque tâche est assignée à un Développeur et peut avoir des Jalons (Milestones).",
+    "type": "ER",
+    "mermaid": "erDiagram\n    PROJET {\n        string id PK\n        string nom\n    }\n    TACHE {\n        string id PK\n        string titre\n        string statut\n    }\n    DEVELOPPEUR {\n        string id PK\n        string nom\n    }\n    JALON {\n        string id PK\n        string nom\n        date echeance\n    }\n    PROJET ||--o{ TACHE : contient\n    DEVELOPPEUR ||--o{ TACHE : assigne\n    TACHE ||--o| JALON : concerne"
+  },
+  {
+    "prompt": "Diagramme ER de livraison de repas : Un Restaurant propose des Plats. Un Client passe une Commande de Plats livrée par un Coursier.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    RESTAURANT {\n        string id PK\n        string nom\n    }\n    PLAT {\n        string id PK\n        string nom\n        float prix\n    }\n    CLIENT {\n        string id PK\n        string nom\n    }\n    COMMANDE {\n        string id PK\n        date dateCommande\n        float total\n    }\n    COURSIER {\n        string id PK\n        string nom\n        string telephone\n    }\n    RESTAURANT ||--o{ PLAT : propose\n    CLIENT ||--o{ COMMANDE : passe\n    COMMANDE }o--|{ PLAT : contient\n    COURSIER ||--o{ COMMANDE : livre"
+  },
+  {
+    "prompt": "Diagramme ER pour la musique en streaming : Un Artiste produit des Albums. Un Album contient des Pistes. Les Utilisateurs créent des Playlists de Pistes.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    ARTISTE {\n        string id PK\n        string nom\n    }\n    ALBUM {\n        string id PK\n        string titre\n        int annee\n    }\n    PISTE {\n        string id PK\n        string titre\n        int dureeSec\n    }\n    PLAYLIST {\n        string id PK\n        string nom\n    }\n    UTILISATEUR {\n        string id PK\n        string pseudo\n    }\n    ARTISTE ||--o{ ALBUM : produit\n    ALBUM ||--o{ PISTE : contient\n    UTILISATEUR ||--o{ PLAYLIST : possede\n    PLAYLIST }o--o{ PISTE : contient"
+  },
+  {
+    "prompt": "Diagramme ER pour un jeu en ligne : Un Joueur possède des Personnages. Un Personnage a un Inventaire d'Objets (Items) et accomplit des Quêtes.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    JOUEUR {\n        string id PK\n        string email\n    }\n    PERSONNAGE {\n        string id PK\n        string pseudo\n        int niveau\n    }\n    OBJET {\n        string id PK\n        string nom\n        int puissance\n    }\n    QUETE {\n        string id PK\n        string titre\n        int recompenseXP\n    }\n    JOUEUR ||--o{ PERSONNAGE : possede\n    PERSONNAGE }o--o{ OBJET : possede\n    PERSONNAGE }o--o{ QUETE : accomplit"
+  },
+  {
+    "prompt": "Diagramme ER de clinique médicale : Un Patient consulte un Médecin lors de Visites. Une visite donne lieu à un Diagnostic.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    PATIENT {\n        string id PK\n        string nom\n        date dateNaissance\n    }\n    MEDECIN {\n        string id PK\n        string nom\n        string specialite\n    }\n    VISITE {\n        string id PK\n        date dateVisite\n        float cout\n    }\n    DIAGNOSTIC {\n        string id PK\n        string description\n        string codeCIM\n    }\n    PATIENT ||--o{ VISITE : effectue\n    MEDECIN ||--o{ VISITE : reçoit\n    VISITE ||--|| DIAGNOSTIC : etablit"
+  },
+  {
+    "prompt": "Diagramme ER de librairie : Un Éditeur publie des Livres. Un Client achète des Livres lors de Ventes en magasin.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    EDITEUR {\n        string id PK\n        string nom\n        string adresse\n    }\n    LIVRE {\n        string id PK\n        string isbn\n        string titre\n    }\n    CLIENT {\n        string id PK\n        string nom\n    }\n    VENTE {\n        string id PK\n        date dateVente\n        float montantTotal\n    }\n    EDITEUR ||--o{ LIVRE : publie\n    VENTE ||--o{ LIVRE : concerne\n    CLIENT ||--o{ VENTE : effectue"
+  },
+  {
+    "prompt": "Diagramme ER d'entrepôt : Un Entrepôt contient des Allées. Une Allée possède des Étagères. Les Produits sont stockés sur des Étagères.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    ENTREPOT {\n        string id PK\n        string nom\n    }\n    ALLEE {\n        string id PK\n        string codeAllee\n    }\n    ETAGERE {\n        string id PK\n        string codeEtagere\n    }\n    PRODUIT {\n        string id PK\n        string codeBarre\n        string nom\n    }\n    ENTREPOT ||--o{ ALLEE : contient\n    ALLEE ||--o{ ETAGERE : contient\n    ETAGERE ||--o{ PRODUIT : stocke"
+  },
+  {
+    "prompt": "Diagramme ER d'expédition de colis : Un Expéditeur envoie des Colis à un Destinataire. Le Colis transite par des Hubs logistiques.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    EXPEDITEUR {\n        string id PK\n        string nom\n    }\n    DESTINATAIRE {\n        string id PK\n        string nom\n    }\n    COLIS {\n        string id PK\n        string codeSuivi\n        float poids\n    }\n    HUB {\n        string id PK\n        string nom\n        string ville\n    }\n    EXPEDITEUR ||--o{ COLIS : envoie\n    DESTINATAIRE ||--o{ COLIS : reçoit\n    COLIS }o--o{ HUB : transite"
+  },
+  {
+    "prompt": "Diagramme ER pour la gestion d'un zoo : Un Enclos abrite des Animaux. Un Gardien est responsable de l'entretien de plusieurs Enclos.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    ENCLOS {\n        string id PK\n        string nom\n        float superficie\n    }\n    ANIMAL {\n        string id PK\n        string nom\n        string espece\n    }\n    GARDIEN {\n        string id PK\n        string nom\n        string service\n    }\n    ENCLOS ||--o{ ANIMAL : abrite\n    GARDIEN ||--o{ ENCLOS : entretient"
+  },
+  {
+    "prompt": "Diagramme ER de pharmacie : Un Fabricant produit des Médicaments. Les clients achètent des Médicaments sur présentation d'Ordonnances.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    FABRICANT {\n        string id PK\n        string nom\n    }\n    MEDICAMENT {\n        string id PK\n        string nom\n        string codeCIP\n    }\n    CLIENT {\n        string id PK\n        string nom\n    }\n    ORDONNANCE {\n        string id PK\n        string medecinNom\n        date dateEmission\n    }\n    FABRICANT ||--o{ MEDICAMENT : produit\n    CLIENT ||--o{ ORDONNANCE : présente\n    ORDONNANCE }o--|{ MEDICAMENT : contient"
+  },
+  {
+    "prompt": "Diagramme ER de location de matériel de chantier : Un Client loue des Équipements. Chaque Équipement appartient à une Catégorie.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CLIENT {\n        string id PK\n        string nom\n        string telephone\n    }\n    EQUIPEMENT {\n        string id PK\n        string nom\n        string codeSerie\n        boolean disponible\n    }\n    CATEGORIE {\n        string id PK\n        string libelle\n    }\n    CONTRAT {\n        string id PK\n        date dateDebut\n        date dateFin\n        float tarifTotal\n    }\n    CLIENT ||--o{ CONTRAT : signe\n    CONTRAT }o--|{ EQUIPEMENT : loue\n    CATEGORIE ||--o{ EQUIPEMENT : classifie"
+  },
+  {
+    "prompt": "Diagramme ER d'aéroport : Un Aéroport dessert des Vols. Un Vol est assuré par un Avion. Des Passagers ont des Billets sur ces Vols.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    AEROPORT {\n        string id PK\n        string codeIATA\n        string nom\n    }\n    VOL {\n        string id PK\n        string numero\n        date depart\n    }\n    AVION {\n        string id PK\n        string modele\n        int capacite\n    }\n    PASSAGER {\n        string id PK\n        string nom\n    }\n    BILLET {\n        string id PK\n        string placeNumero\n    }\n    AEROPORT ||--o{ VOL : depart\n    AEROPORT ||--o{ VOL : arrivee\n    AVION ||--o{ VOL : assure\n    VOL ||--o{ BILLET : contient\n    PASSAGER ||--o{ BILLET : reserve"
+  },
+  {
+    "prompt": "Diagramme ER de service de livraison d'eau : Une Station de pompage remplit des Citernes. Les Camions-citernes livrent les clients.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    STATION {\n        string id PK\n        string nom\n    }\n    CITERNE {\n        string id PK\n        string codeCiterne\n        float volumeMaxLitres\n    }\n    CAMION {\n        string id PK\n        string immatriculation\n    }\n    CLIENT {\n        string id PK\n        string nom\n        string adresse\n    }\n    STATION ||--o{ CITERNE : remplit\n    CAMION ||--|| CITERNE : tracte\n    CAMION ||--o{ CLIENT : livre"
+  },
+  {
+    "prompt": "Diagramme ER pour la gestion d'un laboratoire de recherche : Un Chercheur travaille dans un Laboratoire. Un Chercheur rédige des Publications.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CHERCHEUR {\n        string id PK\n        string nom\n        string specialite\n    }\n    LABORATOIRE {\n        string id PK\n        string nom\n        string themeRecherche\n    }\n    PUBLICATION {\n        string id PK\n        string titre\n        date publicationDate\n    }\n    LABORATOIRE ||--o{ CHERCHEUR : emploie\n    CHERCHEUR }o--o{ PUBLICATION : co-redige"
+  },
+  {
+    "prompt": "Diagramme ER pour un système de gestion d'amarrage : Un Ponton comprend des Emplacements d'amarrage. Un Bateau est amarré à un Emplacement.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    PONTON {\n        string id PK\n        string codePonton\n    }\n    EMPLACEMENT {\n        string id PK\n        int numero\n        float profondeurMetres\n    }\n    BATEAU {\n        string id PK\n        string nom\n        string immatriculation\n    }\n    PONTON ||--o{ EMPLACEMENT : comprend\n    EMPLACEMENT ||--o| BATEAU : amarre"
+  },
+  {
+    "prompt": "Diagramme ER pour un service de location de box de stockage : Un Centre possède des Box. Un Client loue un Box via un Contrat de location.",
+    "type": "ER",
+    "mermaid": "erDiagram\n    CENTRE {\n        string id PK\n        string nom\n        string adresse\n    }\n    BOX {\n        string id PK\n        string codeBox\n        float volumeMetresCubes\n    }\n    CLIENT {\n        string id PK\n        string nom\n    }\n    CONTRAT {\n        string id PK\n        date dateSignature\n        float tarifMensuel\n    }\n    CENTRE ||--o{ BOX : contient\n    CLIENT ||--o{ CONTRAT : signe\n    BOX ||--|| CONTRAT : loue"
+  }
+]

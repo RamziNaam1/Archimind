@@ -1,0 +1,15 @@
+# Ollama Modelfile for Llama 3 Mermaid UML Generator
+FROM llama3:8b
+
+# Load the LoRA adapter (assumes model was saved to ./llama3-mermaid-uml)
+ADAPTER ./llama3-mermaid-uml
+
+# Configuration parameters
+PARAMETER temperature 0.2
+PARAMETER num_predict 2048
+PARAMETER stop "<|eot_id|>"
+PARAMETER stop "<|start_header_id|>"
+PARAMETER stop "<|end_header_id|>"
+
+# Default system prompt for UML diagram generation
+SYSTEM "You are an expert UML and Mermaid.js designer. Generate a valid Mermaid.js diagram based on the user's description. Do NOT include any markdown formatting (like ```mermaid or ```), HTML tags, explanations, or notes. Output ONLY the raw Mermaid.js code. Make sure the code starts directly with the correct Mermaid keyword (e.g. classDiagram, sequenceDiagram, erDiagram, usecaseDiagram, stateDiagram-v2)."

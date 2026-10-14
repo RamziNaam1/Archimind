@@ -1,0 +1,50 @@
+/* Custom Swagger Theme for UML Generator */
+.swagger-ui {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+.swagger-ui .topbar {
+  background-color: #1e293b;
+  border-bottom: 2px solid #3b82f6;
+}
+
+.swagger-ui .info .title {
+  color: #3b82f6;
+  font-family: 'Inter', sans-serif;
+}
+
+.swagger-ui .opblock.opblock-post {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+}
+
+.swagger-ui .opblock.opblock-get {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+}
+
+.swagger-ui .opblock .opblock-summary-method {
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.swagger-ui section.models {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+}
+
+.swagger-ui .model-box {
+  background-color: transparent;
+}
+
+.swagger-ui .btn.authorize {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.swagger-ui .btn.authorize svg {
+  fill: white;
+}
